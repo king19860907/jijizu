@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<package name="album" extends="strutsqs" namespace="/album">
+		<!-- 相册首页 -->
+		<action name="album" class="com.jijizu.web.album.action.AlbumAction" method="album">
+				<result name="success">/album/album-index.jsp</result>
+		</action>
+		<!-- 相册照片 -->
+		<action name="photo" class="com.jijizu.web.album.action.AlbumAction" method="photo">
+				<result name="success">/album/album-photo.jsp</result>
+				<result name="album-index" type="redirect">/album/</result>
+		</action>
+		<!-- 批量管理照片 -->
+		<action name="editPhotoBatch" class="com.jijizu.web.album.action.AlbumAction" method="editPhotoBatch">
+				<result name="success">/album/album-edit-photo-batch.jsp</result>
+		</action>
+		<!-- 相册详细页 -->
+		<action name="photoDetail" class="com.jijizu.web.album.action.AlbumAction" method="photoDetail">
+				<result name="success">/album/album-photo-detail.jsp</result>
+		</action>
+		<!-- 照片上传页面 -->
+		<action name="upload" class="com.jijizu.web.album.action.AlbumAction" method="upload">
+				<result name="success">/album/album-photo-upload.jsp</result>
+		</action>
+		<!-- 上传完毕编辑页 -->
+		<action name="upload2" class="com.jijizu.web.album.action.AlbumAction" method="upload2">
+				<result name="success">/album/album-photo-upload2.jsp</result>
+		</action>
+		
+		<!-- ajax -->
+		<!-- 创建相册 -->
+		<action name="createAlbum" class="com.jijizu.web.album.action.AlbumActionAjax" method="createAlbum"/>
+		<!-- 删除相册 -->
+		<action name="deleteAlbum" class="com.jijizu.web.album.action.AlbumActionAjax" method="deleteAlbum"/>
+    	<!-- 更新相册 -->
+		<action name="updateAlbum" class="com.jijizu.web.album.action.AlbumActionAjax" method="updateAlbum"/>
+    	<!-- 删除照片 -->
+		<action name="deletePhoto" class="com.jijizu.web.album.action.AlbumActionAjax" method="deletePhoto"/>
+		<!-- 更新照片 -->
+		<action name="updatePhoto" class="com.jijizu.web.album.action.AlbumActionAjax" method="updatePhoto"/>
+    	<!-- 批量移动照片 -->
+		<action name="movePhotoBatch" class="com.jijizu.web.album.action.AlbumActionAjax" method="movePhotoBatch"/>
+   		<!-- 批量删除照片 -->
+		<action name="deletePhotoBatch" class="com.jijizu.web.album.action.AlbumActionAjax" method="deletePhotoBatch"/>
+    	<!-- 图片上传 -->
+		<action name="fileUpload" class="com.jijizu.web.album.action.AlbumActionAjax" method="fileUpload"/>
+		<!-- 批量图片修改 -->
+		<action name="updatePhotoList" class="com.jijizu.web.album.action.AlbumActionAjax" method="updatePhotoList"/>
+    </package>
+	
+</struts>

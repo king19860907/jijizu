@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <!-- 统一的数据cache，可以根据不同的功能再进一步分为多个cache -->
+	<bean id="dataCache" class="com.jijizu.base.cache.DefaultCacheWrapperFactoryBean">
+		<property name="serverHosts">
+		  	<list>
+		         <value>${memcached.data.host}</value>
+		    </list>
+		</property>
+		<property name="weights">
+		  	<list>
+		       <value>1</value>
+		    </list>
+		</property>
+		<property name="connectionPoolSize" value="50" />
+		<property name="useBinary" value="true" />
+		<property name="instanceName" value="dataCacheInstance" />
+	</bean>
+
+    <!-- 实现SNA架构的用户信息cache -->
+    <bean id="snaCache" class="com.jijizu.base.cache.SingleCacheWrapperFactoryBean">
+ 		<property name="serverHosts">
+  			<list>
+                <value>${memcached.sna.host}</value>
+            </list>
+  		</property>
+  		<property name="weights">
+  		   <list>
+               <value>1</value>
+           </list>
+  		</property>
+  		<property name="connectionPoolSize" value="50" />
+  		<property name="useBinary" value="true" />
+  		<property name="instanceName" value="snaSingleCacheInstance" />
+    </bean>
+    
+	<bean id="cacheService" class="com.jijizu.core.cache.service.impl.CacheServiceImpl">
+		<property name="dataCache" ref="dataCache"/>
+		<property name="snaCache" ref="snaCache"/>
+	</bean>
+</beans>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+           
+    <!-- 发布微博验证 -->
+	<bean id="postStatusCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="statusLastContentNotRepeatCheck"/>
+				<ref bean="statusContentNotOnlyContainsPunctuation"/>
+				<ref bean="statusContentNotOnlyContainsSpecialChar"/>
+				<ref bean="statusContentNotContansIllegalwordsCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 转发微博验证 -->
+	<bean id="forwardStatusCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="statusLastContentNotRepeatCheck"/>
+				<ref bean="statusContentNotOnlyContainsPunctuation"/>
+				<ref bean="statusContentNotOnlyContainsSpecialChar"/>
+				<ref bean="statusContentNotContansIllegalwordsCheck"/>
+				<ref bean="statusExistCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 评论微博验证 -->
+	<bean id="postCommentCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="statusContentLessThanLengthCheck"/>
+				<ref bean="statusLastContentNotRepeatCheck"/>
+				<ref bean="statusContentNotOnlyContainsPunctuation"/>
+				<ref bean="statusContentNotOnlyContainsSpecialChar"/>
+				<ref bean="statusContentNotContansIllegalwordsCheck"/>
+				<ref bean="statusExistCheck"/>
+				<ref bean="commentExistCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 删除微薄验证 -->
+	<bean id="deleteStatusCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="statusBelongToUserCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 删除评论验证 -->
+	<bean id="deleteCommentCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="commentExistCheck"/>
+				<ref bean="commentCanDeleteCheck"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="statusDAO" class="com.jijizu.core.status.dao.impl.StatusDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="statusService" class="com.jijizu.core.status.service.impl.StatusServiceImpl" init-method="init">
+		<property name="statusDAO" ref="statusDAO"/>
+		<property name="userInfoDAO" ref="userInfoDAO"/>
+		<property name="groupDAO" ref="groupDAO"/>
+		<property name="cacheService" ref="cacheService"/>
+		<property name="albumService" ref="albumService"/>
+		<property name="groupService" ref="groupService"/>
+		<property name="messageService" ref="messageService"/>
+		<property name="postStatusCheckContext" ref="postStatusCheckContext"/>
+		<property name="forwardStatusCheckContext" ref="forwardStatusCheckContext"/>
+		<property name="postCommentCheckContext" ref="postCommentCheckContext"/>
+		<property name="deleteStatusCheckContext" ref="deleteStatusCheckContext"/>
+		<property name="deleteCommentCheckContext" ref="deleteCommentCheckContext"/>
+	</bean>
+	
+</beans>

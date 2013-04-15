@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	
+	<!-- 关注某人 -->
+	<insert id="followOne" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="id">
+			SELECT seq_j_follow_info_id.NEXTVAL AS VALUE FROM DUAL
+		</selectKey>
+		 MERGE INTO J_FOLLOW_INFO F
+			USING (SELECT #userId# as USER_ID, #followUserId# as FOLLOW_USER_ID FROM DUAL) D
+			ON (F.USER_ID = D.USER_ID AND F.FOLLOW_USER_ID = D.FOLLOW_USER_ID)
+			WHEN NOT MATCHED THEN
+		
+			INSERT 
+			  (FOLLOW_ID, USER_ID, FOLLOW_USER_ID, FOLLOW_TIME)
+			VALUES
+			  (#id#, #userId#, #followUserId#, SYSDATE)
+	</insert>
+	
+	<!-- 取消关注 -->
+	<delete id="followCancel" parameterClass="java.util.Map">
+		DELETE FROM J_FOLLOW_INFO WHERE USER_ID = #userId# AND FOLLOW_USER_ID = #followUserId#
+	</delete>
+	
+	<!-- 查看两个用户是否互相关注 -->
+	<select id="isFollowEachOther" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		   select count(*)
+                         from j_follow_info a, j_follow_info b
+                        where a.user_id = #userId1#
+                          and a.follow_user_id = #userId2#
+                          and a.follow_user_id = b.user_id
+                          and a.user_id = b.follow_user_id
+	</select>
+	
+	<!-- 获取好友 -->
+	<sql id="findFriendsPage_sql">
+		 select jui.*
+          from j_follow_info a, j_follow_info b, j_user_info jui
+         where a.user_id = b.follow_user_id
+           and a.follow_user_id = b.user_id
+           and a.user_id = #userId#
+           and a.follow_user_id = jui.user_id
+           <isNotNull property="nickName">
+		 		and (lower(jui.nickname) like '%'||#nickName#||'%' or lower(jui.name) like '%'||#nickName#||'%')
+		   </isNotNull>
+         order by a.follow_time
+	</sql>
+	<select id="findFriendsPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findFriendsPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findFriendsPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findFriendsPage_sql" />
+		) A
+	</select>
+	
+	<!-- 获取共同好友 -->
+	<sql id="findCommonFriendsPage_sql">
+		select jui.*
+           from (select a.*
+                   from j_follow_info a, j_follow_info b
+                  where a.user_id = b.follow_user_id
+                    and a.follow_user_id = b.user_id
+                    and a.user_id = #userId1#) friend1,
+                (select a.*
+                   from j_follow_info a, j_follow_info b
+                  where a.user_id = b.follow_user_id
+                    and a.follow_user_id = b.user_id
+                    and a.user_id = #userId2#) friend2,
+                j_user_info jui
+          where friend1.follow_user_id = friend2.follow_user_id
+            and friend1.follow_user_id = jui.user_id
+            order by friend1.follow_time desc
+	</sql>
+	<select id="findCommonFriendsPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findCommonFriendsPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findCommonFriendsPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findCommonFriendsPage_sql" />
+		) A
+	</select>
+	
+	<!-- 获取发送申请好友 -->
+	<sql id="findSendApplyFriendsPage_sql">
+		 select jui.*
+                         from j_follow_info jfi,j_user_info jui
+                        where jfi.user_id = #userId#
+                          and jfi.follow_user_id not in
+                              (select jfi.user_id
+                                 from j_follow_info jfi
+                                where jfi.follow_user_id = #userId#)
+                          and jui.user_id = jfi.follow_user_id
+                          order by jfi.follow_time desc
+	</sql>
+	<select id="findSendApplyFriendsPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findSendApplyFriendsPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findSendApplyFriendsPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findSendApplyFriendsPage_sql" />
+		) A
+	</select>
+	
+	<!-- 是否已关注某人 -->
+	<select id="hasFollowUser" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		select count(*) from j_follow_info jfi where jfi.user_id = #userId# and jfi.follow_user_id = #followUserId#
+	</select>
+	
+</sqlMap>

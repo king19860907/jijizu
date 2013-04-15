@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+    
+    <!-- 创建相册验证 -->       
+	<bean id="createAlbumCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 删除相册验证 -->
+	<bean id="deleteAlbumCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="albumExistCheck"/>
+				<ref bean="albumBelongToUserCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 编辑相册验证 -->
+	<bean id="updateAlbumCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="albumExistCheck"/>
+				<ref bean="albumBelongToUserCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 删除照片验证 -->
+	<bean id="deletePhotoCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="photoExistCheck"/>
+				<ref bean="photoBelongToUserCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 更新照片验证 -->
+	<bean id="updatePhotoCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="photoExistCheck"/>
+				<ref bean="photoBelongToUserCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 批量移动照片验证 -->
+	<bean id="movePhotoBatchCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="albumExistCheck"/>
+				<ref bean="albumBelongToUserCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 批量删除照片 -->
+	<bean id="deletePhotoBatchCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<bean id="updatePhotoBatchCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="albumExistCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<bean id="albumDAO" class="com.jijizu.core.album.dao.impl.AlbumDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="albumService" class="com.jijizu.core.album.service.impl.AlbumServiceImpl">
+		<property name="albumDAO" ref="albumDAO"/>
+		<property name="statusDAO" ref="statusDAO"/>
+		<property name="createAlbumCheckContext" ref="createAlbumCheckContext"/>
+		<property name="deleteAlbumCheckContext" ref="deleteAlbumCheckContext"/>
+		<property name="updateAlbumCheckContext" ref="updateAlbumCheckContext"/>
+		<property name="deletePhotoCheckContext" ref="deletePhotoCheckContext"/>
+		<property name="updatePhotoCheckContext" ref="updatePhotoCheckContext"/>
+		<property name="movePhotoBatchCheckContext" ref="movePhotoBatchCheckContext"/>
+		<property name="deletePhotoBatchCheckContext" ref="deletePhotoBatchCheckContext"/>
+		<property name="updatePhotoBatchCheckContext" ref="updatePhotoBatchCheckContext"/>
+	</bean>
+	
+</beans>

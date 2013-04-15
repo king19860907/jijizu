@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+
+	<resultMap id="postArea" class="com.jijizu.core.user.dto.PostArea">
+		<result column="area_id" property="areaId" />
+		<result column="area_name" property="areaName" />
+		<result column="seq" property="seq" />
+		<result column="father_id" property="fatherId" />
+		<result column="class_type" property="classType" />
+	</resultMap>
+	
+	<!-- 查询所有地区 -->
+	<select id="findAllArea" resultMap="postArea">
+		 select * from j_post_area jpa where jpa.cancel_flag = 0 order by jpa.father_id desc,jpa.seq asc
+	</select>
+	
+</sqlMap>

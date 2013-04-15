@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<!-- 用户注册验证 -->
+	<bean id="userRegisterCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="emailCheck"/>
+				<ref bean="nameLegitimacyCheck"/>
+				<ref bean="nameNotEqualOfficialNameCheck"/>
+				<ref bean="passwordLegitimacyCheck"/>
+				<ref bean="logNameNotExistCheck"/>
+				<ref bean="nickNameLegitimacyCheck"/>
+				<ref bean="nickNameNotExistCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 用户登录验证 -->
+	<bean id="userLoginCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="logNameAndPasswordCorrectCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 添加工作信息验证 -->
+	<bean id="addUserJobCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 添加工作信息验证 -->
+	<bean id="updateUserJobCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 删除工作信息验证 -->
+	<bean id="deleteUserJobCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 添加用户学校信息验证 -->
+	<bean id="addUserSchoolCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 删除用户学校信息验证 -->
+	<bean id="deleteUserSchoolCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 更新用户学校信息验证 -->
+	<bean id="updateUserSchoolCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 更新用户信息验证 -->
+	<bean id="updateUserInfoCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="nameLegitimacyCheck"/>
+				<ref bean="nickNameLegitimacyCheck"/>
+				<ref bean="nickNameNotExistCheck"/>
+				<ref bean="livingCommunityExistCheck"/>
+				<ref bean="hometownLivingCommunityExistCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 添加孩子信息验证 -->
+	<bean id="addChildCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="birthdayNotNullCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="nameLegitimacyCheck"/>
+				<ref bean="nickNameLegitimacyCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 更新孩子信息验证 -->
+	<bean id="updateChildCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="birthdayNotNullCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="nameLegitimacyCheck"/>
+				<ref bean="nickNameLegitimacyCheck"/>
+				<ref bean="childNickNameNotExistCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 删除孩子信息验证 -->
+	<bean id="deleteChildCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 获取用户新消息提示验证 -->
+	<bean id="getUserMessageCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 找回密码验证 -->
+	<bean id="findPwdCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="emailCheck"/>
+				<ref bean="logNameExistCheck"/>
+				<ref bean="iCodeCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 重置密码验证 -->
+	<bean id="resetPwdCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="emailCheck"/>
+				<ref bean="findPwdUrlNotExpireCheck"/>
+				<ref bean="passwordLegitimacyCheck"/>
+				<ref bean="logNameExistCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userInfoDAO" class="com.jijizu.core.user.dao.impl.UserInfoDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="postAreaDAO" class="com.jijizu.core.user.dao.impl.PostAreaDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="sysDataDicDAO" class="com.jijizu.core.dao.impl.SysDataDicDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="userInfoService" class="com.jijizu.core.user.service.impl.UserInfoServiceImpl" init-method="init">
+		<property name="userInfoDAO" ref="userInfoDAO"/>
+		<property name="postAreaDAO" ref="postAreaDAO"/>
+		<property name="albumService" ref="albumService"/>
+		<property name="messageService" ref="messageService"/>
+		<property name="noticeService" ref="noticeService"/>
+		<property name="emailService" ref="emailService"/>
+		<property name="cacheService" ref="cacheService"/>
+		<property name="followDAO" ref="followDAO"/>
+		<property name="userRegisterCheckContext" ref="userRegisterCheckContext"/>
+		<property name="userLoginCheckContext" ref="userLoginCheckContext"/>
+		<property name="addUserJobCheckContext" ref="addUserJobCheckContext"/>
+		<property name="updateUserJobCheckContext" ref="updateUserJobCheckContext"/>
+		<property name="deleteUserJobCheckContext" ref="deleteUserJobCheckContext"/>
+		<property name="addUserSchoolCheckContext" ref="addUserSchoolCheckContext"/>
+		<property name="deleteUserSchoolCheckContext" ref="deleteUserSchoolCheckContext"/>
+		<property name="updateUserSchoolCheckContext" ref="updateUserSchoolCheckContext"/>
+		<property name="updateUserInfoCheckContext" ref="updateUserInfoCheckContext"/>
+		<property name="addChildCheckContext" ref="addChildCheckContext"/>
+		<property name="deleteChildCheckContext" ref="deleteChildCheckContext"/>
+		<property name="updateChildCheckContext" ref="updateChildCheckContext"/>
+		<property name="getUserMessageCheckContext" ref="getUserMessageCheckContext"/>
+		<property name="findPwdCheckContext" ref="findPwdCheckContext"/>
+		<property name="findPwdEmailTemplate" ref="findPwdEmailTemplate"/>
+		<property name="resetPwdCheckContext" ref="resetPwdCheckContext"/>
+	</bean>
+	
+</beans>

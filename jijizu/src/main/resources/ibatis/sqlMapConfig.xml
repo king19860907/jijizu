@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE sqlMapConfig 
+PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" 
+"http://www.ibatis.com/dtd/sql-map-config-2.dtd"> 
+<sqlMapConfig> 
+
+    <sqlMap resource="ibatis/page-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/user-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/postarea-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/sys-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/status-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/follow-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/mail-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/auth-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/group-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/album-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/notice-sql-mapping.xml"/>
+    <sqlMap resource="ibatis/diary-sql-mapping.xml"/>
+    
+</sqlMapConfig>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	
+	<!-- 更新小本本 -->
+	<update id="updateDiary" parameterClass="java.util.Map">
+		 update j_diary_info  jdi  set  jdi.diary_type = #diaryType#,
+              jdi.child_id        = #childId#,
+              jdi.title           = #title#,
+              jdi.diary_date      = #diaryDate#,
+              jdi.child_month     = #childMonth#,
+              jdi.height          = #height#,
+              jdi.weight          = #weight#,
+              jdi.milk_ml         = #milkMl#,
+              jdi.milk_name       = #milkName#,
+              jdi.first_time_type = #firstTimeType#,
+              jdi.first_day       = #firstDay#,
+              jdi.recovery_flag   = #recoveryFlag#
+        where jdi.user_id = #userId#
+          and jdi.diary_id = #diaryId#
+	</update>
+	
+	<!-- 保存小本本 -->
+	<insert id="saveDiary" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="diaryId">
+			SELECT seq_j_diary_info_id.nextval AS VALUE FROM DUAL
+		</selectKey>
+		  insert into j_diary_info jdi
+		    (jdi.diary_id,
+		     jdi.diary_type,
+		     jdi.child_id,
+		     jdi.title,
+		     jdi.diary_date,
+		     jdi.create_date,
+		     jdi.cancel_flag,
+		     jdi.child_month,
+		     jdi.status_id,
+		     jdi.height,
+		     jdi.user_id,
+		     jdi.weight,
+		     jdi.milk_ml,
+		     jdi.milk_name,
+		     jdi.first_time_type,
+		     jdi.first_day,
+		     jdi.recovery_flag)
+		  values
+		    (#diaryId#,
+		     #diaryType#,
+		     #childId#,
+		     #title#,
+		     #diaryDate#,
+		     sysdate,
+		     0,
+		     #childMonth#,
+		     #statusId#,
+		     #height#,
+		     #userId#,
+		     #weight#,
+		     #milkMl#,
+		     #milkName#,
+		     #firstTimeType#,
+		     #firstDay#,
+		     #recoveryFlag#)
+	</insert>
+	
+	<resultMap id="diaryInfo" class="com.jijizu.core.diary.dto.DiaryInfo">
+		<result column="diary_id" property="diaryId" />
+		<result column="diary_type" property="diaryType" />
+		<result column="child_id" property="childId" />
+		<result column="title" property="title" />
+		<result column="diary_date" property="diaryDate" />
+		<result column="create_date" property="createDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="child_month" property="childMonth" />
+		<result column="status_id" property="statusId" />
+		<result column="height" property="height" />
+		<result column="user_id" property="userId" />
+		<result column="weight" property="weight" />
+		<result column="milk_ml" property="milkMl" />
+		<result column="milk_name" property="milkName" />
+		<result column="first_time_type" property="firstTimeType" />
+		<result column="first_day" property="firstDay" />
+		<result column="sick_id" property="sickId" />
+		<result column="recovery_flag" property="recoveryFlag" />
+  </resultMap>
+  
+  <!-- 查询孩子的小本本 -->
+  <select id="findChildDiary" parameterClass="java.util.Map" resultMap="diaryInfo">
+  	select *
+       from j_diary_info jdi
+      where jdi.child_id = #childId#
+        and jdi.diary_type = #diaryType#
+        and jdi.cancel_flag = 0
+      order by jdi.child_month
+  </select>
+  
+  <!-- 根据id查询孩子的小本本 -->
+  <select id="getDiaryById" parameterClass="java.util.Map" resultMap="diaryInfo">
+  	select *
+       from j_diary_info jdi
+      where jdi.diary_id = #diaryId#
+        and jdi.cancel_flag = 0
+        and rownum = 1
+  </select>
+  
+  <!-- 查询孩子小本本数据 -->
+  <select id="findChildDiaryData" parameterClass="java.util.Map" resultMap="diaryInfo">
+  	 select  jdi.*,rownum as num from ( select * from j_diary_info jdi where jdi.diary_id in (
+            select jdi.max_diary_id from (select jdi.child_month,max(jdi.diary_id) as max_diary_id
+       from j_diary_info jdi
+      where jdi.child_id = #childId#
+        and jdi.diary_type = #diaryType#
+        and jdi.cancel_flag = 0
+        group by jdi.child_month
+      ) jdi
+     )order by jdi.child_month desc) jdi where rownum <![CDATA[ <= ]]> #rownum#
+  </select>
+  
+  <!-- 查询平均小本本数据 -->
+  <select id="findAvgDiaryData" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+   select * from(
+	select 
+		<isEqual property="diaryType" compareValue="DIARY_TYPE_HEIGHT">
+			avg(jdi.height) as avg_data, 
+		</isEqual>
+		<isEqual property="diaryType" compareValue="DIARY_TYPE_WEIGHT">
+			avg(jdi.weight) as avg_data, 
+		</isEqual>
+		<isEqual property="diaryType" compareValue="DIARY_TYPE_MILK_POWDER">
+			avg(jdi.milk_ml) as avg_data, 
+		</isEqual>
+				
+		jdi.child_month
+       from j_diary_info jdi
+      where jdi.diary_type = #diaryType#
+       and jdi.cancel_flag = 0
+       <isNotNull property="childMonths">
+       	<isNotEmpty property="childMonths">
+       		 and (jdi.child_month in
+	         <iterate property="childMonths" open="(" close=")" conjunction=",">
+				#childMonths[]#
+		     </iterate>
+		     or jdi.child_month > #maxMonth# )
+       	</isNotEmpty>
+       </isNotNull>
+      group by jdi.child_month
+      order by jdi.child_month) where rownum <![CDATA[ <= ]]> #rownum#
+  </select>
+  
+  <!-- 删除小本本信息 -->
+  <delete id="deleteDiaryInfo" parameterClass="java.util.Map">
+  	update j_diary_info jdi set jdi.cancel_flag = 1 where jdi.diary_id = #diaryId# and jdi.user_id = #userId#
+  </delete>
+  
+  <!-- 根据月份查询小本本数据 -->
+  <select id="findDiaryByMonth" parameterClass="java.util.Map" resultMap="diaryInfo">
+  	  select *
+        from j_diary_info jdi
+       where jdi.user_id = #userId#
+         and jdi.cancel_flag = 0
+         and jdi.diary_date <![CDATA[ >= ]]> trunc(#startDate#) and jdi.diary_date <![CDATA[ <= ]]> trunc(#endDate#)
+       order by jdi.diary_date desc
+  </select>
+  
+  <!-- 查询奶粉品牌 -->
+  <select id="findMilkNames" parameterClass="java.util.Map" resultClass="java.lang.String">
+  		 select distinct jdi.milk_name
+		    from j_diary_info jdi
+		   where jdi.milk_name is not null
+		     and jdi.cancel_flag = 0
+		     and jdi.milk_name like '%'||#milkName#||'%'
+		     and rownum <![CDATA[ <= ]]> #rownum#
+  </select>
+  
+  <!--获取第一次的平均值-->
+  <select id="getFirstDayAvg" parameterClass="java.util.Map" resultClass="java.lang.Long">
+   select avg(jdi.first_day) from j_diary_info jdi where jdi.first_time_type = #firstTimeType# and jdi.cancel_flag = 0 and jdi.first_day is not null
+  </select>
+  
+  <resultMap id="sickInfo" class="com.jijizu.core.diary.dto.SickInfo">
+		<result column="sick_id" property="sickId" />
+		<result column="sick_name" property="sickName" />
+		<result column="sick_type" property="sickType" />
+		<result column="relate_sick_id" property="relateSickId" />
+		<result column="create_date" property="createDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+  </resultMap>
+  
+  <!-- 根据类型获取疾病列表 -->
+  <select id="findSickInfoByType" parameterClass="java.util.Map" resultMap="sickInfo">
+  	select *
+         from j_sick_info jsi2
+        where jsi2.sick_type = #sickType#
+          and jsi2.cancel_flag = 0
+          and jsi2.sick_name like '%'||#sickName#||'%'
+          and rownum <![CDATA[ <= ]]> #rownum#
+  </select>
+  
+  <!-- 保存疾病信息 -->
+  <insert id="saveSick" parameterClass="java.util.Map">
+  	<selectKey resultClass="Long" type="pre" keyProperty="sickId">
+			SELECT seq_j_sick_info_id.nextval AS VALUE FROM DUAL
+	</selectKey>
+  	 merge into j_sick_info jsi using (select #sickName# as sick_name ,#sickType# as sick_type from dual) d
+           on(jsi.sick_name=d.sick_name and jsi.sick_type = d.sick_type)
+           when not matched then
+           
+           insert  (sick_id,sick_name,sick_type,relate_sick_id,create_date,cancel_flag)
+           values (#sickId#,#sickName#,#sickType#,#sickId#,sysdate,0)
+  </insert>
+  
+  <!-- 保存小本本与症状关系 -->
+  <insert id="saveDiarySymptom" parameterClass="java.util.Map">
+  	insert into j_diary_symptom jds
+             (jds.id, jds.diary_id, jds.sick_id)
+             select seq_j_diary_symptom_id.nextval, #diaryId#, jsi2.sick_id
+               from j_sick_info jsi2 where jsi2.sick_name in 
+		<iterate property="symptomNames" open="(" close=")" conjunction=",">
+	  	 #symptomNames[]# 
+	  	 </iterate>
+		 and jsi2.sick_type = #sickType#
+  </insert>
+  
+  <!-- 通过疾病名称修改小本本的确诊疾病 -->
+  <update id="updateDiarySickIdBySickName" parameterClass="java.util.Map">
+  	 update j_diary_info jdi
+              set jdi.sick_id = (select jsi2.sick_id
+                                   from j_sick_info jsi2
+                                  where jsi2.sick_name = #sickName#
+                                    and jsi2.sick_type = #sickType#)
+            where jdi.diary_id = #diaryId#
+  </update>
+  
+  <!-- 根据diaryId删除症状与小本本关系 -->
+  <delete id="deleteDiarySymptomByDiaryId" parameterClass="java.util.Map">
+  	 delete from j_diary_symptom jds where jds.diary_id = #diaryId#
+  </delete>
+  
+  <!--根据小本本ID获取症状-->
+  <select id="findSymptomByDiaryId" parameterClass="java.util.Map" resultMap="sickInfo">
+  	select jsi2.*
+	  from j_diary_symptom jds, j_sick_info jsi2
+	 where jds.diary_id = #diaryId#
+	   and jsi2.sick_id = jds.sick_id
+  </select>
+  
+  <!--根据ID获取疾病信息-->
+  <select id="getSickInfoById" parameterClass="java.util.Map" resultMap="sickInfo">
+	 select * from j_sick_info jsi where jsi.sick_id = #sickId#
+  </select>
+  
+  <!-- 查询相同症状的用户 -->
+  <select id="findSameSickUser" parameterClass="java.util.Map" resultMap="userInfo">
+  	select *
+            from (select distinct *
+                    from (select jui.*
+                            from j_diary_info jdi, j_user_info jui
+                           where jdi.diary_id in
+                                 (select jds.diary_id
+                                    from j_diary_symptom jds
+                                   where jds.sick_id in
+                                         (select jsi.sick_id
+                                            from j_sick_info jsi
+                                           where jsi.relate_sick_id in
+                                                 (select jsi.relate_sick_id
+                                                    from j_diary_symptom jds,
+                                                         j_sick_info     jsi
+                                                   where jds.diary_id = #diaryId#
+                                                     and jsi.sick_id =
+                                                         jds.sick_id)))
+                             and jdi.user_id <![CDATA[ <> ]]> #userId#
+                             and jdi.cancel_flag = 0
+                             and jdi.user_id = jui.user_id
+                           order by jdi.diary_date desc))
+           where rownum <![CDATA[ <= ]]> #rownum#
+  </select>
+  
+</sqlMap>

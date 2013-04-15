@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<package name="notice" extends="strutsqs" namespace="/notice">
+		<!-- ajax -->
+		<!-- 删除系统通知 -->
+		<action name="deleteNotice" class="com.jijizu.web.notice.action.NoticeActionAjax" method="deleteNotice"/>
+		<!-- 在系统通知页面关注用户后修改通知内容 -->
+		<action name="updateNoticeContentAfterFollow" class="com.jijizu.web.notice.action.NoticeActionAjax" method="updateNoticeContentAfterFollow"/>
+    </package>
+	
+</struts>

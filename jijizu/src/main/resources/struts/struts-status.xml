@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<!-- 不包含民命空间的url  -->
+	<package name="status" extends="strutsqs" namespace="/status">
+		
+		<!-- 获取评论 -->
+		<action name="loadComment" class="com.jijizu.web.status.action.StatusAction" method="loadComment">
+				<result name="success">/common/comment-inc.jsp</result>
+		</action>
+		<!-- 获取最新的一条微薄 -->
+		<action name="getNewestStatus" class="com.jijizu.web.status.action.StatusAction" method="getNewestStatus">
+				<result name="success">/common/status-single-inc.jsp</result>
+		</action>
+		<!-- 微博获取更多微薄 -->
+		<action name="showMoreStatus" class="com.jijizu.web.status.action.StatusAction" method="showMoreStatus">
+				<result name="success">/common/show-more-status.jsp</result>
+		</action>
+		<!-- 查询最新微博 -->
+		<action name="findNewStatus" class="com.jijizu.web.status.action.StatusAction" method="findNewStatus">
+				<result name="success">/status/inc/find-new-status.jsp</result>
+		</action>
+		
+		<!-- ajax -->
+		<!-- 发布微博 -->
+		<action name="postStatus" class="com.jijizu.web.status.action.StatusActionAjax" method="postStatus"/>
+    	<!-- 微博上传图片 -->
+    	<action name="fileUploadStatusAjax" class="com.jijizu.web.action.FileUploadAjax" method="fileUploadStatusAjax"/>
+    	<!-- 转发微博 -->
+    	<action name="forwardStatus" class="com.jijizu.web.status.action.StatusActionAjax" method="forwardStatus"/>
+    	<!-- 发表评论 -->
+    	<action name="postComment" class="com.jijizu.web.status.action.StatusActionAjax" method="postComment"/>
+    	<!-- 删除微薄 -->
+    	<action name="deleteStatus" class="com.jijizu.web.status.action.StatusActionAjax" method="deleteStatus"/>
+    	<!-- 删除评论 -->
+    	<action name="deleteComment" class="com.jijizu.web.status.action.StatusActionAjax" method="deleteComment"/>
+    	<!-- 新微博数量 -->
+    	<action name="countNewStatus" class="com.jijizu.web.status.action.StatusActionAjax" method="countNewStatus"/>
+    </package>
+	
+</struts>

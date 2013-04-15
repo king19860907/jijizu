@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<!-- 不包含民命空间的url  -->
+	<package name="mail" extends="strutsqs" namespace="/mail">
+		<!-- 私信详细页 -->
+		<action name="mailDetail" class="com.jijizu.web.mail.action.MailAction" method="mailDetail">
+				<result name="success">/mail/mail-detail.jsp</result>
+		</action>
+		
+		<!-- ajax -->
+		<!-- 发送私信 -->
+		<action name="sendMail" class="com.jijizu.web.mail.action.MailActionAjax" method="sendMail"/>
+   		<!-- 删除私信显示记录 -->
+   		<action name="deleteMailShow" class="com.jijizu.web.mail.action.MailActionAjax" method="deleteMailShow"/>
+   		<!-- 删除私信详细记录 -->
+   		<action name="deleteMailDetail" class="com.jijizu.web.mail.action.MailActionAjax" method="deleteMailDetail"/>
+   		<!-- 关注后更新私信内容 -->
+   		<action name="updateMailContentAfterFollow" class="com.jijizu.web.mail.action.MailActionAjax" method="updateMailContentAfterFollow"/>
+    </package>
+	
+</struts>

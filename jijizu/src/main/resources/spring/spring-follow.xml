@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+           
+    <!-- 关注用户验证 -->
+	<bean id="followUserCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="notFollowOwnCheck"/>
+				<ref bean="userExistCheck"/>
+				<ref bean="notHasFollowCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 拒绝关注验证 -->
+	<bean id="refuseFollowCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="userExistCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 取消关注验证 -->
+	<bean id="followCancelCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 批量取消关注验证 -->
+	<bean id="followCancelBatchCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="followDAO" class="com.jijizu.core.follow.dao.impl.FollowDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="followService" class="com.jijizu.core.follow.service.impl.FollowServiceImpl">
+		<property name="userInfoDAO" ref="userInfoDAO"/>
+		<property name="followDAO" ref="followDAO"/>
+		<property name="mailService" ref="mailService"/>
+		<property name="noticeService" ref="noticeService"/>
+		<property name="emailService" ref="emailService"/>
+		<property name="followEmailTemplate" ref="followEmailTemplate"/>
+		<property name="followEachOtherEmailTemplate" ref="followEachOtherEmailTemplate"/>
+		<property name="followUserCheckContext" ref="followUserCheckContext"/>
+		<property name="followCancelCheckContext" ref="followCancelCheckContext"/>
+		<property name="refuseFollowCheckContext" ref="refuseFollowCheckContext"/>
+		<property name="followCancelBatchCheckContext" ref="followCancelBatchCheckContext"/>
+	</bean>
+	
+	
+</beans>

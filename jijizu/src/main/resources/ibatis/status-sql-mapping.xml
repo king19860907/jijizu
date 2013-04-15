@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	
+	<!-- 敏感词 -->
+	<resultMap id="illegalWordsDTO" class="com.jijizu.core.status.dto.IllegalWords">
+		<result column="WORD" property="word"/>
+	</resultMap>
+	<select id="getIllegalwords" resultMap="illegalWordsDTO" >
+		select * from j_SNS_IllEGALWORDS
+	</select>
+	
+	<!-- 新增一条status -->
+	<insert id="insertStatus" parameterClass="java.util.Map" >
+		<selectKey resultClass="Long" type="pre" keyProperty="id">
+			SELECT seq_j_status_info_id.NEXTVAL AS VALUE FROM DUAL
+		</selectKey>
+		INSERT INTO j_status_info
+		  (STATUS_ID,
+		   USER_ID,
+		   CONTENT,
+		   MEDIA_TYPE,
+		   MEDIA_URL,
+		   SOURCE_TYPE,
+		   SOURCE_TYPE_DETAIL,
+		   SOURCE_TEXT,
+		   POST_TIME,
+		   POST_IP,
+		   FORWARD_ID,
+		   FORWARD_SRC_ID,
+		   SINA_STATUS_ID,
+		   IS_RECOMMEND,
+		   FORWARD_NUM,
+		   COMMENT_NUM,
+		   GROUP_ID,
+		   source_url,
+		   not_show_flag
+		   )
+		VALUES
+		  (#id#,
+		   #userId#,
+		   #content#,
+		   #mediaType#,
+		   #mediaUrl#,
+		   #sourceType#,
+		   #sourceTypeDetail#,
+		   #sourceText#,
+		   sysdate,
+		   #postIp#,
+		   #forwardId#,
+		   #forwardSrcId#,
+		   #sinaStatusId#,
+		   0,
+		   0,
+		   0,
+		   #groupId#,
+		   #sourceUrl#,
+		   #notShowFlag#)
+	</insert>
+	
+	<!-- 表情 -->
+	<resultMap id="statusFace" class="com.jijizu.core.status.dto.StatusFace">
+		<result column="face_id" property="faceId"/>
+		<result column="name" property="name"/>
+		<result column="img_url" property="imgUrl"/>
+		<result column="face_type" property="faceType"/>
+		<result column="default_content" property="defaultContent"/>
+		<result column="cancel_flag" property="cancelFlag"/>
+	</resultMap>
+	
+	<!-- 根据类型查找表情 -->
+	<select id="findFaceByType" parameterClass="java.util.Map" resultMap="statusFace">
+		select * from j_status_face jsf where jsf.face_type = #faceType# order by jsf.face_id
+	</select>
+	
+	<resultMap class="com.jijizu.core.status.dto.StatusInfo" id="statusInfo">
+		<result column="status_id" property="statusId" />
+		<result column="user_id" property="userId" />
+		<result column="name" property="name" />
+		<result column="nickname" property="nickName" />
+		<result column="head_img_url" property="headImgUrl" />
+		<result column="content" property="content" />
+		<result column="media_type" property="mediaType" />
+		<result column="media_url" property="mediaUrl" />
+		<result column="source_type" property="sourceType" />
+		<result column="source_type_detail" property="sourceTypeDetail" />
+		<result column="source_text" property="sourceText" />
+		<result column="post_time" property="postTime" />
+		<result column="post_ip" property="postIp" />
+		<result column="forward_id" property="forwardId" />
+		<result column="forward_src_id" property="forwardSrcId" />
+		<result column="sina_status_id" property="sinaStatusId" />
+		<result column="is_recommend" property="isRecommend" />
+		<result column="forward_num" property="forwardNum" />
+		<result column="comment_num" property="commentNum" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="group_id" property="groupId" />
+		<result column="source_url" property="sourceUrl" />
+		<result column="v_flag" property="vFlag" />
+		<result column="enterprise_flag" property="enterpriseFlag" />
+	</resultMap>
+	
+	<resultMap id="statusInfoWithFwdSrc"  extends="statusInfo" class="com.jijizu.core.status.dto.StatusInfoWithFwdSrc">	
+		<result column="forward_src_id" property="forwardSourceStatus" select="getStatusById"/>	
+	</resultMap>
+	
+	<sql id="getStatusById_sql">
+		select jsi.*, jui.name, jui.user_id, jui.head_img_url,jui.nickname,jui.v_flag,jui.enterprise_flag
+			  from j_status_info jsi, j_user_info jui
+			 where jui.user_id = jsi.user_id
+			   and jsi.cancel_flag = 0 and jsi.status_Id = #statusId#
+	</sql>
+	
+	<!-- 根据id查询一条微博 -->
+	<select id="getStatusById" parameterClass="java.lang.Long" resultMap="statusInfo">
+		<include refid="getStatusById_sql"/>
+	</select>
+	
+	<!-- 根据id查询一条微博(带转发) -->
+	<select id="getStatusWithFwdSrc" parameterClass="java.lang.Long" resultMap="statusInfoWithFwdSrc">
+		<include refid="getStatusById_sql"/>
+	</select>
+	
+	<!-- 查询好友发送的微博 -->
+	<sql id="findFriendsStatusPage_sql">
+	   select jsi.*,
+               jui.name,
+               jui.head_img_url,
+               jui.nickname,
+               jui.v_flag,
+               jui.enterprise_flag
+          from j_status_info jsi, j_user_info jui
+         where jsi.cancel_flag = 0
+           and (jsi.user_id in (select a.follow_user_id as user_id
+                                  from j_follow_info a, j_follow_info b
+                                 where a.user_id = b.follow_user_id
+                                   and a.follow_user_id = b.user_id
+                                   and a.user_id = #userId#) or jsi.user_id = #userId# or
+               jsi.user_id in
+               (select jfi.follow_user_id as user_id
+                   from j_follow_info jfi, j_user_info jui
+                  where jfi.follow_user_id = jui.user_id
+                    and (jui.v_flag = 1 or jui.enterprise_flag = 1)
+                    and jfi.user_id = #userId#))
+           and jsi.user_id = jui.user_id
+           and jsi.not_show_flag = 0
+	</sql>
+	<select id="findFriendsStatusPage" parameterClass="java.util.Map" resultMap="statusInfoWithFwdSrc">
+		<include refid="pageBegin" />		
+		<include refid="findFriendsStatusPage_sql" />
+		order by jsi.post_time desc
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findFriendsStatusPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findFriendsStatusPage_sql" />
+		order by jsi.post_time desc
+		) A
+	</select>
+	
+	<!-- 查询某条微博之前的微博 -->
+	<select id="findBeforeStatusList" parameterClass="java.util.Map" resultMap="statusInfoWithFwdSrc">
+		select * from (<include refid="findFriendsStatusPage_sql" /> and jsi.status_id <![CDATA[<]]> #statusId# order by jsi.post_time desc)
+		where rownum <![CDATA[<=]]> #rownum#
+	</select>
+	
+	<!-- 查询某条微博之后的微博 -->
+	<select id="findAfterStatusList" parameterClass="java.util.Map" resultMap="statusInfoWithFwdSrc">
+		select * from (<include refid="findFriendsStatusPage_sql" /> and jsi.status_id <![CDATA[>]]> #statusId# order by jsi.post_time desc)
+		where status_id is not null 
+		<isNotNull property="rownum">
+			<isNotEmpty property="rownum">
+				rownum <![CDATA[<=]]> #rownum#
+			</isNotEmpty>
+		</isNotNull>
+	</select>
+	
+	<!-- 统计某条微博之后的新微博数量 -->
+	<select id="countAfterStatus" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		select count(*) from (<include refid="findFriendsStatusPage_sql" /> and jsi.status_id <![CDATA[>]]> #statusId#)
+	</select>
+	
+	
+	<!-- 查询用户发送的微博 -->
+	<sql id="findUserStatusPage_sql">
+		select jsi.*, jui.name, jui.head_img_url,jui.nickname,jui.v_flag,jui.enterprise_flag
+         from j_status_info jsi,
+              j_user_info jui
+        where jsi.cancel_flag = 0
+          and jsi.user_id = #userId#
+          and jsi.user_id = jui.user_id
+          and jsi.not_show_flag = 0
+        order by jsi.post_time desc
+	</sql>
+	<select id="findUserStatusPage" parameterClass="java.util.Map" resultMap="statusInfoWithFwdSrc">
+		<include refid="pageBegin" />		
+		<include refid="findUserStatusPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findUserStatusPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findUserStatusPage_sql" />
+		) A
+	</select>
+	
+	<!-- 保存评论 -->
+	<insert id="insertComment" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="id">
+			SELECT seq_j_comment_info_id.NEXTVAL AS VALUE FROM DUAL
+		</selectKey>
+		insert into j_comment_info jci
+		  (jci.comment_id,
+		   jci.user_id,
+		   jci.status_id,
+		   jci.content,
+		   jci.source_type,
+		   jci.source_type_detail,
+		   jci.source_text,
+		   jci.source_url,
+		   jci.post_time,
+		   jci.post_ip,
+		   jci.reply_id,
+		   jci.reply_user_id)
+		values
+		  (#id#,
+		   #userId#,
+		   #statusId#,
+		   #content#,
+		   #sourceType#,
+		   #sourceTypeDetail#,
+		   #sourceText#,
+		   #sourceUrl#,
+		   sysdate,
+		   #postIp#,
+		   #replyId#,
+		   #replyUserId#)
+	</insert>
+	
+	<!-- 更新微博的被评论数 -->
+	<update id="updateStatusCommentNumByStatusId" parameterClass="java.util.Map">
+		UPDATE J_STATUS_INFO SET COMMENT_NUM=(SELECT COUNT(*) FROM J_COMMENT_INFO WHERE STATUS_ID=#statusId# AND CANCEL_FLAG = 0) WHERE STATUS_ID=#statusId#
+	</update>
+	
+	<resultMap class="com.jijizu.core.status.dto.CommentInfo" id="commentInfo">
+		<result column="comment_id" property="commentId" />
+		<result column="user_id" property="userId" />
+		<result column="status_id" property="statusId" />
+		<result column="content" property="content" />
+		<result column="source_type" property="sourceType" />
+		<result column="source_type_detail" property="sourceTypeDetail" />
+		<result column="source_text" property="sourceText" />
+		<result column="source_url" property="sourceUrl" />
+		<result column="post_time" property="postTime" />
+		<result column="post_ip" property="postIp" />
+		<result column="sina_comment_id" property="sinaCommentId" />
+		<result column="reply_id" property="replyId" />
+		<result column="reply_user_id" property="replyUserId" />
+		<result column="sina_user_id" property="sinaUserId" />
+		<result column="sina_head_img_url" property="sinaHeadImgUrl" />
+		<result column="sina_nick_name" property="sinaNickName" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="name" property="name" />
+		<result column="nickname" property="nickName" />
+		<result column="head_img_url" property="headImgUrl" />
+		<result column="v_flag" property="vFlag" />
+		<result column="enterprise_flag" property="enterpriseFlag" />
+	</resultMap>
+	
+	<resultMap id="commentInfoWithStatus" extends="commentInfo" class="com.jijizu.core.status.dto.CommentInfoWithStatus">
+		<result column="STATUS_ID" property="status" select="getStatusById"/>	
+		<result column="REPLY_ID" property="comment" select="getCommentByCommentId"/>	
+	</resultMap>
+	
+	<!-- 更具评论ID获取评论 -->
+	<select id="getCommentByCommentId" parameterClass="java.lang.Long" resultMap="commentInfo">
+		select jci.*, jui.name, jui.head_img_url,jui.nickname,jui.v_flag,jui.enterprise_flag
+           from j_comment_info jci, j_user_info jui
+          where jci.user_id = jui.user_id
+            and jci.comment_id = #commentId#
+            and jci.cancel_flag = 0
+            and rownum = 1
+	</select>
+	
+	<!-- 根据微博ID查询评论 -->
+	<sql id="findCommentsByStatusIdPage_sql">
+		  select jci.*,jui.name,jui.head_img_url,jui.nickname,jui.v_flag,jui.enterprise_flag
+                        from j_comment_info jci,j_user_info jui
+                       where jci.status_id = #statusId#
+                         and jci.cancel_flag = 0
+                         and jui.user_id = jci.user_id
+                       order by jci.post_time desc
+	</sql>
+	<select id="findCommentsByStatusIdPage" parameterClass="java.util.Map" resultMap="commentInfo">
+		<include refid="pageBegin" />		
+		<include refid="findCommentsByStatusIdPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findCommentsByStatusIdPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findCommentsByStatusIdPage_sql" />
+		) A
+	</select>
+	
+	<!-- 删除微薄 -->
+	<update id="deleteStatusById" parameterClass="java.util.Map">
+		update j_status_info jsi set jsi.cancel_flag = 1 where jsi.status_id = #statusId# and jsi.user_id = #userId#
+	</update>
+	
+	<!-- 根据微薄ID和用户ID统计微薄数量 -->
+	<select id="countStatusByStatusIdAndUserId" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		select count(*) from j_status_info jsi where jsi.status_id = #statusId# and jsi.user_id = #userId# 
+		and jsi.cancel_flag = 0 and jsi.not_show_flag = 0
+	</select>
+	
+	<!-- 保存at记录 -->
+	<insert id="saveAtRecord" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" keyProperty="atRecordId">
+			SELECT seq_j_at_record_id.NEXTVAL AS VALUE FROM DUAL
+		</selectKey>
+		  merge into j_at_record jar using (select #userId# as user_id,#refId# as ref_id from dual) d on (jar.at_user_id=d.user_id and jar.ref_id = d.ref_id)
+           when not matched then
+             insert (jar.at_record_id,jar.ref_id,jar.at_user_id,jar.type,jar.post_time)
+             values (#atRecordId#,#refId#,#userId#,#type#,sysdate)
+	</insert>
+	
+	<!-- 删除评论 -->
+	<update id="deleteCommentById" parameterClass="java.util.Map">
+		 update j_comment_info jci set jci.cancel_flag = 1 where jci.comment_id = #commentId#
+	</update>
+	
+	<!-- 获取收到的评论 -->
+	<sql id="findCommentInPage_sql">
+		select jci.*, jui.name, jui.nickname, jui.head_img_url,jui.v_flag,jui.enterprise_flag
+          from j_comment_info jci, j_user_info jui
+         where jci.user_id != #userId#
+           and jci.reply_user_id = #userId#
+           and jui.user_id = jci.user_id
+           and jci.cancel_flag = 0
+         order by jci.post_time desc
+	</sql>
+	<select id="findCommentInPage" parameterClass="java.util.Map" resultMap="commentInfoWithStatus">
+		<include refid="pageBegin" />		
+		<include refid="findCommentInPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findCommentInPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findCommentInPage_sql" />
+		) A
+	</select>
+	
+	<!-- 统计新评论的数量 -->
+	<select id="countNewCommentNumByUserId" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		select count(*)
+          from j_comment_info jci
+         where jci.user_id != #userId#
+           and jci.reply_user_id = #userId#
+           and jci.cancel_flag = 0
+           and jci.post_time <![CDATA[>=]]> #readCommentTime#
+         order by jci.post_time desc
+	</select>
+	
+	<!-- 统计新at我的数量 -->
+	<select id="countNewAtMeNumByUserId" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		 select a.status_num + b.comment_num
+         from (select count(*) as status_num
+                 from j_at_record jar, j_status_info jsi
+                where jar.at_user_id = #userId#
+                  and jar.at_user_id <![CDATA[<>]]> jsi.user_id 
+                  and jar.type = 'AT_RECORD_TYPE_STATUS'
+                  and jar.ref_id = jsi.status_id
+                  and jsi.cancel_flag = 0
+                  and jsi.post_time <![CDATA[>=]]> #readAtMeTime#
+                order by jar.post_time desc) a,
+              (select count(*) as comment_num
+                 from j_at_record jar, j_comment_info jci
+                where jar.at_user_id = #userId#
+                  and jar.type = 'AT_RECORD_TYPE_COMMENT'
+                  and jci.comment_id = jar.ref_id
+                  and jci.cancel_flag = 0
+                  and jci.post_time <![CDATA[>=]]> #readAtMeTime#
+                order by jar.post_time desc) b
+	</select>
+	
+	<!-- 获取发出的评论 -->
+	<sql id="findCommentOutPage_sql">
+		select jci.*,jui.name,jui.nickname,jui.head_img_url,jui.v_flag,jui.enterprise_flag
+           from j_comment_info jci,j_user_info jui
+          where jci.user_id = #userId#
+            and jci.cancel_flag = 0
+            and jci.user_id=jui.user_id
+          order by jci.post_time desc
+	</sql>
+	<select id="findCommentOutPage" parameterClass="java.util.Map" resultMap="commentInfoWithStatus">
+		<include refid="pageBegin" />		
+		<include refid="findCommentOutPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findCommentOutPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findCommentOutPage_sql" />
+		) A
+	</select>
+	
+	<!-- 查询at我的微薄 -->
+	<sql id="findAtMeStatusPage_sql">
+		select jsi.*, jui.name, jui.head_img_url, jui.nickname,jui.v_flag,jui.enterprise_flag
+		    from j_at_record jar, j_status_info jsi, j_user_info jui
+		   where jar.at_user_id = #userId#
+		     and jar.type = 'AT_RECORD_TYPE_STATUS'
+		     and jar.ref_id = jsi.status_id
+		     and jui.user_id = jsi.user_id
+		     and jsi.cancel_flag = 0
+		   order by jar.post_time desc
+	</sql>
+	<select id="findAtMeStatusPage" parameterClass="java.util.Map" resultMap="statusInfoWithFwdSrc">
+		<include refid="pageBegin" />		
+		<include refid="findAtMeStatusPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findAtMeStatusPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findAtMeStatusPage_sql" />
+		) A
+	</select>
+	
+	<!-- 查询at我的评论 -->
+	<sql id="findAtMeCommentPage_sql">
+		  select jci.*, jui.name, jui.nickname, jui.head_img_url,jui.v_flag,jui.enterprise_flag
+           from j_at_record jar, j_comment_info jci, j_user_info jui
+          where jar.at_user_id = #userId#
+            and jar.type = 'AT_RECORD_TYPE_COMMENT'
+            and jci.comment_id = jar.ref_id
+            and jci.cancel_flag = 0
+            and jui.user_id = jci.user_id
+         order by jar.post_time desc
+	</sql>
+	<select id="findAtMeCommentPage" parameterClass="java.util.Map" resultMap="commentInfoWithStatus">
+		<include refid="pageBegin" />		
+		<include refid="findAtMeCommentPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findAtMeCommentPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findAtMeCommentPage_sql" />
+		) A
+	</select>
+	
+	<!-- 更新微博转发数 -->
+	<update id="updateStatusForwardNumByStatusId" parameterClass="java.lang.Long">
+		  UPDATE J_STATUS_INFO
+                        SET FORWARD_NUM = CASE WHEN(FORWARD_ID IS NULL) THEN (SELECT COUNT(*)
+                                                      FROM J_STATUS_INFO
+                                                     WHERE FORWARD_SRC_ID =
+                                                           #statusId#) ELSE (SELECT COUNT(*)
+                                                                  FROM J_STATUS_INFO
+                                                                 WHERE FORWARD_ID =
+                                                                       #statusId#) END
+                      WHERE STATUS_ID = #statusId#
+	</update>
+	
+	<!-- 修改微博内容及媒体地址 -->
+	<update id="updateStatusContentAndMediaUrlById" parameterClass="java.util.Map">
+		 update j_status_info jsi
+        set jsi.content = #content#, jsi.media_url = #mediaUrl#,jsi.media_type=#mediaType#
+      where jsi.user_id = #userId#
+        and jsi.status_id = #statusId#
+	</update>
+	
+</sqlMap>

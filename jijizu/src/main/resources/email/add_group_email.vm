@@ -1,0 +1,9 @@
+你好：<br/>
+<br/>
+您的好友${fromUser}在集集组上创建了一个新的集集组"${groupName}"，快去看看吧 ！<br/>
+<br/>
+详细请用此链接查看 ${url}<br/>
+<br/>
+感谢您对集集组的支持！<br/>
+<br/>
+集集组&nbsp;&nbsp;<a href="http://www.jijizu.com">http://www.jijizu.com/</a>

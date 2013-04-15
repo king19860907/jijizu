@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<package name="diary" extends="strutsqs" namespace="/diary">
+		<!-- 创建小本本页面-->
+		<action name="create" class="com.jijizu.web.diary.action.DiaryAction" method="create">
+				<result name="success">/diary/diary-create.jsp</result>
+		</action>
+		<!-- 查看小本本页面 -->
+		<action name="view" class="com.jijizu.web.diary.action.DiaryAction" method="view">
+				<result name="success">/diary/diary-view.jsp</result>
+		</action>
+		<!-- 小本本页面-月 -->
+		<action name="month" class="com.jijizu.web.diary.action.DiaryAction" method="month">
+				<result name="success">/diary/diary-month.jsp</result>
+		</action>
+		<!-- 小本本页面-周 -->
+		<action name="week" class="com.jijizu.web.diary.action.DiaryAction" method="week">
+				<result name="success">/diary/diary-week.jsp</result>
+		</action>
+		<!-- 小本本页面-日 -->
+		<action name="day" class="com.jijizu.web.diary.action.DiaryAction" method="day">
+				<result name="success">/diary/diary-day.jsp</result>
+		</action>
+		<!-- 小本本更新页面 -->
+		<action name="edit" class="com.jijizu.web.diary.action.DiaryAction" method="edit">
+				<result name="success">/diary/diary-edit.jsp</result>
+		</action>
+		<!-- 获取相同症状的人 -->
+		<action name="getSameSickData" class="com.jijizu.web.diary.action.DiaryAction" method="getSameSickData">
+				<result name="success">/diary/inc/same-sick-data.jsp</result>
+		</action>
+		
+		<!-- ajax -->
+		<!-- 创建小本本 -->
+		<action name="addDiary" class="com.jijizu.web.diary.action.DiaryActionAjax" method="addDiary"/>
+		<!-- 更新小本本 -->
+		<action name="updateDiary" class="com.jijizu.web.diary.action.DiaryActionAjax" method="updateDiary"/>
+		<!-- 查询小本本记录的数据 -->
+		<action name="findDiary" class="com.jijizu.web.diary.action.DiaryActionAjax" method="findDiary"/>
+		<!-- 删除小本本 -->
+		<action name="deleteDiary" class="com.jijizu.web.diary.action.DiaryActionAjax" method="deleteDiary"/>
+		<!-- 查询奶粉品牌-->
+		<action name="findMilkNames" class="com.jijizu.web.diary.action.DiaryActionAjax" method="findMilkNames"/>
+		<!-- 查询症状名称 -->
+		<action name="findSymptomNames" class="com.jijizu.web.diary.action.DiaryActionAjax" method="findSymptomNames"/>
+   		<!-- 查询疾病名称 -->
+		<action name="sickNames" class="com.jijizu.web.diary.action.DiaryActionAjax" method="sickNames"/>
+    </package>
+	
+</struts>

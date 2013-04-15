@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+           
+    <!-- 发起集集组验证 -->
+	<bean id="addGroupCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="groupCostLegitimacyCheck"/>
+				<ref bean="groupApplyNumLegitimacyCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="groupStartDateAfterNowDateCheck"/>
+				<ref bean="groupStartDateBeforeEndDateCheck"/>
+				<ref bean="applyEndDateBeforeStartDatecCheck"/>
+				<ref bean="applyEndDateAfterNowDateCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 更新集集组验证 -->
+	<bean id="updateGroupCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="groupCostLegitimacyCheck"/>
+				<ref bean="groupApplyNumLegitimacyCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="groupStartDateAfterNowDateCheck"/>
+				<ref bean="groupStartDateBeforeEndDateCheck"/>
+				<ref bean="applyEndDateBeforeStartDatecCheck"/>
+				<ref bean="applyEndDateAfterNowDateCheck"/>
+				<ref bean="groupExistCheck"/>
+				<ref bean="groupBelongToUserCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!--  加入集集组验证 -->
+	<bean id="enterGroupCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="nameLegitimacyCheck"/>
+				<ref bean="mobileCheck"/>
+				<ref bean="groupExistCheck"/>
+				<ref bean="groupNotBeginCheck"/>
+				<ref bean="notGroupCreatorCheck"/>
+				<ref bean="onlyFriendsCanEnterGroupCheck"/>
+				<ref bean="groupUsersNotExistCheck"/>
+				<ref bean="groupApplyNumNotOverCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 加入集集组等待列表验证 -->
+	<bean id="enterWaitingListCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="nameLegitimacyCheck"/>
+				<ref bean="mobileCheck"/>
+				<ref bean="groupExistCheck"/>
+				<ref bean="groupNotBeginCheck"/>
+				<ref bean="notGroupCreatorCheck"/>
+				<ref bean="onlyFriendsCanEnterGroupCheck"/>
+				<ref bean="groupUsersNotExistCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 加入集集集弹出层验证 -->
+	<bean id="enterGroupLayerCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="groupExistCheck"/>
+				<ref bean="onlyFriendsCanEnterGroupCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 取消参加集集组验证 -->
+	<bean id="cancelEnterGroupCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 删除集集组验证 -->
+	<bean id="deleteGroupCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="groupExistCheck"/>
+				<ref bean="groupBelongToUserCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 通过用户参加集集组验证 -->
+	<bean id="passGroupUserCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="groupExistCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 拒绝用户参加集集组验证 -->
+	<bean id="refuseGroupUserCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="groupExistCheck"/>
+				<ref bean="groupBelongToUserCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 复制照片到集集组验证 -->
+	<bean id="copyPhotoToGroupCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="groupExistCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<!-- 批量上传图片验证 -->
+	<bean id="uploadPhotoBatchCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="groupExistCheck"/>
+			</list>	
+		</property>
+	</bean>
+	
+	<bean id="groupDAO" class="com.jijizu.core.group.dao.impl.GroupDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="groupService" class="com.jijizu.core.group.service.impl.GroupServiceImpl">
+		<property name="groupDAO" ref="groupDAO"/>
+		<property name="userInfoDAO" ref="userInfoDAO"/>
+		<property name="albumDAO" ref="albumDAO"/>
+		<property name="followDAO" ref="followDAO"/>
+		<property name="mailService" ref="mailService"/>
+		<property name="cacheService" ref="cacheService"/>
+		<property name="emailService" ref="emailService"/>
+		<property name="noticeService" ref="noticeService"/>
+		<property name="addGroupEmailTemplate" ref="addGroupEmailTemplate"/>
+		<property name="addGroupCheckContext" ref="addGroupCheckContext"/>
+		<property name="enterGroupCheckContext" ref="enterGroupCheckContext"/>
+		<property name="cancelEnterGroupCheckContext" ref="cancelEnterGroupCheckContext"/>
+		<property name="deleteGroupCheckContext" ref="deleteGroupCheckContext"/>
+		<property name="passGroupUserCheckContext" ref="passGroupUserCheckContext"/>
+		<property name="refuseGroupUserCheckContext" ref="refuseGroupUserCheckContext"/>
+		<property name="updateGroupCheckContext" ref="updateGroupCheckContext"/>
+		<property name="copyPhotoToGroupCheckContext" ref="copyPhotoToGroupCheckContext"/>
+		<property name="uploadPhotoBatchCheckContext" ref="uploadPhotoBatchCheckContext"/>
+		<property name="enterWaitingListCheckContext" ref="enterWaitingListCheckContext"/>
+	</bean>
+	
+</beans>

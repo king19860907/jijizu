@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap >
+  
+  <!-- 保存个人认证申请 -->
+  <insert id="saveAuthPersonal" parameterClass="java.util.Map">
+    <selectKey resultClass="Long" type="pre" keyProperty="id">
+		SELECT seq_j_auth_personal_id.nextval AS VALUE FROM DUAL
+	</selectKey>
+  	insert into j_auth_personal jap
+    (jap.id,
+     jap.real_name,
+     jap.title,
+     jap.auth_desc,
+     jap.email,
+     jap.mobile,
+     jap.user_id)
+  values
+    (#id#, #name#, #title#, #authDesc#, #email#, #mobile#,#userId#)
+  </insert>
+  
+  <!-- 统计用户不为拒绝的个人认证申请数量 -->
+  <select id="countAuthPersonalNotRefuse" resultClass="java.lang.Long" parameterClass="java.lang.Long">
+  	 select count(*) from j_auth_personal jap where jap.user_id = #userId# and jap.auth_type <![CDATA[ <> ]]> 'AUTH_TYPE_REFUSE'
+  </select>
+  
+  <!-- 保存企业认证申请 -->
+  <insert id="saveAuthEnterprise" parameterClass="java.util.Map">
+  	<selectKey resultClass="Long" type="pre" keyProperty="id">
+		SELECT seq_j_auth_enterprise_id.nextval AS VALUE FROM DUAL
+	</selectKey>
+  	 insert into j_auth_enterprise jae
+      (jae.id,
+       jae.name,
+       jae.mobile,
+       jae.business_license,
+       jae.register_no,
+       jae.user_id,
+       jae.company_name)
+    values
+      (#id#, #name#, #mobile#, #businessLicense#, #registerNo#, #userId#,#companyName#)
+  </insert>
+  
+  <!-- 统计用户不为拒绝的企业认证申请数量 -->
+  <select id="countEnterpriseNotRefuse" resultClass="java.lang.Long" parameterClass="java.lang.Long">
+  	select count(*) from j_auth_enterprise jae where jae.user_id = #userId# and jae.auth_type <![CDATA[ <> ]]> 'AUTH_TYPE_REFUSE'
+  </select>
+   
+</sqlMap>

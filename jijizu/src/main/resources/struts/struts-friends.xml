@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<!-- 不包含民命空间的url  -->
+	<package name="friends" extends="strutsqs" namespace="/friends">
+		<!-- 好友管理 -->
+		<action name="manage" class="com.jijizu.web.friends.action.FriendsAction" method="manage">
+				<result name="success">/friends/manage.jsp</result>
+		</action>
+		<!-- 已申请好友 -->
+		<action name="apply" class="com.jijizu.web.friends.action.FriendsAction" method="apply">
+				<result name="success">/friends/apply.jsp</result>
+		</action>
+		<!-- 查找好友 -->
+		<action name="search" class="com.jijizu.web.friends.action.FriendsAction" method="search">
+				<result name="success">/friends/search.jsp</result>
+		</action>
+		<!-- 查找公司好友 -->
+		<action name="findUserByCompany" class="com.jijizu.web.friends.action.FriendsAction" method="findUserByCompany">
+				<result name="success">/friends/inc/company-user-inc.jsp</result>
+		</action>
+		<!-- 查找生活小区好友 -->
+		<action name="findUserByLivingCommunity" class="com.jijizu.web.friends.action.FriendsAction" method="findUserByLivingCommunity">
+				<result name="success">/friends/inc/living-user-inc.jsp</result>
+		</action>
+		<!-- 查询学校好友 -->
+		<action name="findUserBySchool" class="com.jijizu.web.friends.action.FriendsAction" method="findUserBySchool">
+				<result name="success">/friends/inc/school-user-inc.jsp</result>
+		</action>
+		<!-- 查询孩子同学的家长 -->
+		<action name="fndUserByChildSchool" class="com.jijizu.web.friends.action.FriendsAction" method="fndUserByChildSchool">
+				<result name="success">/friends/inc/child-user-inc.jsp</result>
+		</action>
+		
+		<!-- ajax -->
+    </package>
+	
+</struts>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts/struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>	
+	<constant name="struts.devMode" value="false"></constant>
+	<constant name="struts.configuration.xml.reload" value="false"></constant>
+	<constant name="struts.i18n.encoding" value="utf-8"></constant>
+	<constant name="struts.custom.i18n.resources" value="globalMessages"></constant>
+	<constant name="struts.action.extension" value="jspa" />	
+	<constant name="struts.multipart.saveDir" value="/tmp" /> 
+	<constant name="struts.multipart.maxSize" value="10000000000" />
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.enable.SlashesInActionNames" value="true" />
+    <constant name="struts.ognl.allowStaticMethodAccess" value="true" />
+    <constant name="struts.devMode" value="false"></constant>
+ 	<constant name="struts.i18n.reload" value="false"></constant>
+ 
+    <!-- SPRING 管理 -->
+    <constant name= "struts.objectFactory" value="spring" />
+    
+	<!--struts2的Action必须放在指定的包空间下定义-->
+	<package name="strutsqs" extends="struts-default">		
+		<!-- 
+		<interceptors>
+            <interceptor name="jijizuInterceptor"
+                class="com.jijizu.web.Interceptor.JijizuInterceptor" />
+            <interceptor-stack name="jijizuStack">
+                 <interceptor-ref name="defaultStack">   
+                    <param name="exception.logEnabled">true</param>   
+                    <param name="exception.logLevel">error</param>   
+                </interceptor-ref>   
+                <interceptor-ref name="jijizuInterceptor" />
+            </interceptor-stack>            
+        </interceptors> 
+        <default-interceptor-ref name="jijizuStack" />-->
+        <interceptors>
+            <interceptor name="jijizuInterceptor"
+                class="com.jijizu.web.Interceptor.JijizuInterceptor" />
+            <interceptor-stack name="jijizuStack">
+                <interceptor-ref name="defaultStack" >
+                	<param name="exception.logEnabled">true</param>   
+                    <param name="exception.logLevel">error</param>   
+                </interceptor-ref>
+                <interceptor-ref name="jijizuInterceptor" />
+            </interceptor-stack>            
+        </interceptors> 
+        <default-interceptor-ref name="jijizuStack" />
+		
+        <default-action-ref name="error"/>  
+		<global-results>
+			<!-- 
+			<result name="success_info">/pay/payinfo.jsp</result>		
+			<result name="error_info">/pay/payerr.jsp</result>			
+			<result name="login">/user/login.jsp?to=/personalCenter/showIndex.jspa</result>
+			<result name="login_ajax">/main/ret_login_ajax.jsp</result>
+			<result name="index">/inc/Error.jsp</result>
+			<result name="404">/commons/404.jsp</result>
+			<result name="index_info" type="redirect">/</result>
+			<result name="exception">/inc/Error.jsp</result> -->
+			<result name="404">/commons/404.jsp</result>
+			<result name="index" type="redirect">/</result>
+			<result name="not_login" type="redirect">/?target=${target}</result>
+		</global-results>
+		
+		<global-exception-mappings>
+		  <exception-mapping result="exception" exception="java.lang.Exception"></exception-mapping>
+		</global-exception-mappings>
+	</package> 
+	
+	<include file="struts/struts-web.xml"></include>
+	<include file="struts/struts-user.xml"></include>
+	<include file="struts/struts-status.xml"></include>
+	<include file="struts/struts-follow.xml"></include>
+	<include file="struts/struts-group.xml"></include>
+	<include file="struts/struts-mail.xml"></include>
+	<include file="struts/struts-auth.xml"></include>
+	<include file="struts/struts-album.xml"></include>
+	<include file="struts/struts-search.xml"></include>
+	<include file="struts/struts-friends.xml"></include>
+	<include file="struts/struts-notice.xml"></include>
+	<include file="struts/struts-diary.xml"></include>
+</struts>

@@ -1,0 +1,145 @@
+@charset "utf-8";
+ /*------------------------------------------
+  * local css 框架
+  * Developed By: 姚俊玮（Enthen Yao）
+  *
+  * 小本本
+  ----------------------------------------------*/
+
+
+/* 小本本 */
+.little_book_topBar{ height:91px; background:url(../images/little_book_titleBg.jpg) repeat-x;}
+
+.little_book_body{ background:url(../images/little_book_bg.jpg) repeat;}
+.little_book_main{ width:960px; margin:20px auto;}
+.little_book_main .top{ background:url(../images/little_book_contentTopBg.png) no-repeat; height:57px;}
+.little_book_main .center{ background:url(../images/little_book_contentCenterBg.png) repeat-y; padding: 12px 30px 0 30px;}
+.little_book_main .bottom{ background:url(../images/little_book_contentBottomBg.png) no-repeat; height:57px;}
+
+.littlebook_topnav{width:938px; height:37px; margin:0 auto; padding:0 11px;margin-top:20px; position:relative;}
+.littlebook_topnav h3{width:100%; float:left; padding-bottom:10px;}
+.littlebook_topnav .left{ background:url(../images/littlebook_nav.png) no-repeat left top; position:absolute; width:11px; height:37px; left:0; top:0;}
+.littlebook_topnav .right{ background:url(../images/littlebook_nav.png) no-repeat left -74px; position:absolute; width:11px; height:37px; right:0; top:0;}
+.littlebook_topnav ul{ background:url(../images/littlebook_nav.png) repeat-x 0 -37px; float:left; width:100%; height:37px;}
+.littlebook_topnav ul li{ float:left;}
+.littlebook_topnav ul li a{ color:#ccc; height:37px; line-height:32px; display:inline-block; padding:0 20px;}
+.littlebook_topnav ul li a:hover{ background:url(../images/littlebook_nav.png) repeat-x left -111px; color:#fff;}
+
+.little_book_nav{ width:280px; background:#f4f4f4; float:left; margin-right:20px;height:635px;}
+.little_book_nav h3{ font-size:20px; font-family:"微软雅黑"; padding:20px 20px 0 20px; color:#d65f1c; font-weight:normal;}
+.little_book_nav dl{ padding:0 0 20px 20px; background:url(../images/little_book_Navline.jpg) repeat-x bottom left;}
+.little_book_nav dl dt{ font-size:12px; color:#000; font-weight:bold; padding:20px 0 10px 0;}
+.little_book_nav dl.date select{border:1px solid #ccc;font-family:"微软雅黑";}
+.little_book_nav dl.date .year{width:60px;}
+.little_book_nav dl.date .month{width:60px;}
+.little_book_nav dl.date .day{width:120px;}
+.little_book_nav dl.lable li{ height:25px; line-height:21px; float:left; background:url(../images/little_book_label.png) no-repeat top left; padding-left:20px; margin-right:5px; margin-bottom:5px;}
+.little_book_nav dl.lable li span{height:25px; background:url(../images/little_book_label.png) no-repeat right -25px; display:inline-block; padding-right:10px}
+.little_book_nav dl.lable li span a{height:25px; display:inline-block;color:#996633;background:url(../images/little_book_label.png) repeat-x 0 -50px; font-weight:bold}
+
+.little_book_nav dl.tag li{ padding-bottom:10px; color:#333;}
+.little_book_nav dl.tag li span.prompt{ position:relative;}
+.little_book_nav dl.tag li span.prompt .prompt_list{ position:absolute; top:20px; left:0; border:1px solid #ccc; background:#fff; width: 160px; display:none;}
+.little_book_nav dl.tag li span.prompt .prompt_list ul li{ line-height:22px; padding-bottom:0; cursor:pointer;padding-left:5px;}
+.little_book_nav dl.lable li.on{background:url(../images/little_book_label_hover.png) no-repeat top left; }
+.little_book_nav dl.lable li.on span{background:url(../images/little_book_label_hover.png) no-repeat right -25px; }
+.little_book_nav dl.lable li.on span a{background:url(../images/little_book_label_hover.png) repeat-x 0 -50px;}
+.little_book_nav dl.tag li span.prompt .prompt_list ul li.hover{ background:#ccc;}
+
+
+.little_book_nav dl.tag li b{ color:#ff0000;}
+.little_book_nav dl.tag .details_title{ display:inline-block; width:70px; color:#666; text-align:right; line-height:22px;float:left;}
+.little_book_nav dl.tag select{border:1px solid #ccc;font-family:"微软雅黑"; width:160px;}
+.little_book_nav dl.tag .txt{border:1px solid #ccc;font-family:"微软雅黑"; line-height:22px; height:22px;width:155px; padding-left:5px;}
+.little_book_nav dl.tag .radio{ vertical-align:middle; margin-right:5px}
+.little_book_nav dl.tag em{ margin-right:20px;}
+.little_book_nav dl.tag .checkbox{ vertical-align:middle; margin-right:5px;}
+.little_book_nav dl.tag .height_unit{border:1px solid #ccc;font-family:"微软雅黑"; line-height:22px; height:22px;width:40px; padding-left:5px; margin-right:5px;}
+
+.little_book_right{width:600px; float:left;}
+.little_book_right .little_book_content .little_book_title{ position:relative; height:40px; border-bottom:1px solid #ccc; margin-bottom:20px;}
+.little_book_right .little_book_content .little_book_title h3, .little_book_right .little_book_content .little_book_title h3 input{font-family:"微软雅黑"; font-size:20px;  color:#000; line-height:22px; border:0; width:500px; font-weight:normal;}
+.little_book_right .little_book_content .little_book_title .btns{ position:absolute; right:0; top:0;}
+.little_book_right .little_book_content .little_book_title .btns a{ display:inline-block; margin-left:15px;}
+.little_book_right .little_book_content .textarea textarea{width:588px; border:0; font-size:12px; font-family:"微软雅黑"; margin-bottom:5px; border:1px solid #ccc; padding:5px;}
+
+.little_book_content .btnf{ margin-bottom:10px;}
+
+
+.little_book_content .btnf .share{ height:20px; line-height:20px; color:#666; float:right;}
+.little_book_content .btnf .share input{ vertical-align:middle; margin-right:5px;}
+.period .title{ background:url(../images/little_book_line.jpg) no-repeat bottom center; height:30px; position:relative;}
+.period .title .start{ left:0; top:0;position:absolute; font-size:12px; font-family:Arial, Helvetica, sans-serif;}
+.period .title .end{right:0; top:0;position:absolute; font-size:12px; font-family:Arial, Helvetica, sans-serif;}
+.period .txt{ text-align:center; padding:20px 0; font-size:14px;}
+
+.little_book_tab{background: url("../images/little_book_tab.jpg") repeat-x 0 -70px;height:26px;line-height:26px;}
+.little_book_tab ul li{background: url("../images/little_book_tab.jpg") no-repeat; display: block;float: left; margin-right: 10px;  text-align: center;width: 158px;}
+.little_book_tab ul li a{color: #666;}
+.little_book_tab ul li.hover{background: url("../images/little_book_tab.jpg") no-repeat 0 -35px;display: block;float: left;margin-right: 10px;width: 158px;}
+.little_book_tab ul li.hover a{ color: #333;}
+.symptom_input{ background:#fff; border:1px solid #ccc; width:152px; float:left; padding:10px 5px;}
+.little_book_nav dl.tag .symptom_input span input.txt{ border:0; width:auto}
+.symptom_input .tag{height: 22px; line-height: 21px; padding: 0 0 0 8px;cursor: pointer ;margin: 0 5px 10px 0;text-decoration: none;display: inline-block; font-size: 12px; background:url(../images/all_iconbtn.png) no-repeat 0 -240px;}
+.symptom_input .tag span{cursor: pointer; display: inline-block; height: 22px; line-height: 21px;padding: 0 4px 0 2px;background:url(../images/all_iconbtn.png) no-repeat right -270px;color: #423009; text-decoration: none;}
+.symptom_input .tag span a.icon_close{display: inline-block; height: 12px; width: 12px;margin-left: 3px;vertical-align: -2px; background:url(../images/icon.png) no-repeat -545px -137px;}
+.symptom_input .tag span a.icon_close:hover{ background-position:-570px -137px}
+.little_book_content .conResult_sam{width:600px;}
+.little_book_content .conResult_sam dl{width:190px; height:95px; overflow:hidden;}
+.little_book_content .conResult_sam dl dd{width:100px; height:16px; overflow:hidden;}
+.little_book_content .conResult_sam dl dd.btn{ height:22px;}
+.little_book_content .conResult_sam dl dd.btn a.addFriend{ float:left;}
+.little_book_content .conResult_sam dl dd.btn .focusLink{background-image: url("../images/icon.png");background-position: -341px -507px; background-repeat: no-repeat; display: block; float: left; height: 22px; line-height: 20px; padding-left: 20px; width:53px; margin:0}
+.little_book_content .conResult_sam dl dd.btn .focusLink b{display: inline-block; float: left;font-weight: normal; color:#666}
+.little_book_content dd{ line-height:normal;}
+.conResult_sam dl dd.again_btn{display: block; height: 22px; width:75px; overflow: hidden;}
+
+.little_book_nav dl.congratulation dd{ font-weight:bold; font-size:16px; color:#dd6e0a; text-align:center; font-family:"微软雅黑"}
+
+.calendar_box{ background:#f4f4f4;}
+.calendar_title{ padding:10px;}
+.calendar_box .calendar_title .previous{ width:32px; height:32px; background:url(../images/little_book_previous.jpg) no-repeat left top; float:left; margin-top:3px; margin-right:10px;}
+.calendar_box .calendar_title .previous a{ display:inline-block; width:32px; height:32px;}
+.calendar_box .calendar_title .calendar{ font-size:26px; font-family:"微软雅黑"; color:#666;float:left;}
+.calendar_box .calendar_title .next{ width:32px; height:32px; background:url(../images/little_book_next.jpg) no-repeat left top;float:left;margin-top:3px; margin-left:10px; display:inline;}
+.calendar_box .calendar_title .next a{ display:inline-block; width:32px; height:32px;}
+
+.month_table .col1, .week_table .col1{width:126px;}
+.month_table .col2, .week_table .col2{width:130px;}
+.month_table th, .week_table th{ border-right:2px solid #fff;border-bottom:2px solid #fff;text-indent:10px; color:#666; font-size:14px; font-family:"微软雅黑"; padding-bottom:5px; font-weight:normal;}
+.month_table td, .week_table td{border-right:2px solid #fff;border-bottom:2px solid #fff;vertical-align: top; word-break: normal; word-wrap: break-word;}
+.month_table td p, .week_table td p{ background:#ee942c; color:#fff; font-size:14px;text-indent:10px; width:126px; height:22px; overflow:hidden; margin-bottom:1px;}
+.month_table td .day, .week_table td .day{ text-align:right; color:#757575; font-size:16px; font-family:"微软雅黑"; width:120px; position:absolute; bottom:0;}
+.month_table td.last_month, .week_table td.last_month{background:#e0e0e0;}
+.month_box{ position:relative; min-height:120px; _height:120px; width:100%; display:block;}
+.week_box{position:relative; min-height:400px; _height:400px; width:100%; display:block;}
+
+.day_content{min-height:400px; _height:400px;}
+.day_content .leftBar, .day_content .rightBar{ width:360px; margin:0 20px; float:left; padding:10px 0;}
+.Calendar_view{ color:#666; height:22px; line-height:20px; padding-left:10px; font-family:Arial, Helvetica, sans-serif; font-size:12px; margin-bottom:12px;}
+.Calendar_view.today{ background:#797979; color:#fff;}
+.day_txt p{background:#EE942C; color: #FFF;font-size: 14px;height: 20px; line-height:20px;margin-bottom: 1px;overflow: hidden; padding:5px 10px; font-size:12px;}
+
+
+
+.footer_control{ background:#757575; position:relativel;padding: 15px 20px;}
+.footer_control .view_way{ position:relative;}
+.footer_control .view_way dl{ float:left; width:40px; margin-right:20px; cursor:pointer;}
+.footer_control .view_way dl.view_day dt{ width:40px; height:40px; background:url(../images/little_book_day.jpg) no-repeat right top;}
+.footer_control .view_way dl.view_day dd{ text-align:center; color:#fff; font-size:12px;}
+.footer_control .view_way dl.view_day.on dt{background:url(../images/little_book_day.jpg) no-repeat left top;}
+
+.footer_control .view_way dl.view_week dt{ width:40px; height:40px; background:url(../images/little_book_week.jpg) no-repeat left top;}
+.footer_control .view_way dl.view_week dd{ text-align:center; color:#fff; font-size:12px;}
+.footer_control .view_way dl.view_week.on dt{background:url(../images/little_book_week.jpg) no-repeat right top;}
+
+.footer_control .view_way dl.view_month dt{ width:40px; height:40px; background:url(../images/little_book_week.jpg) no-repeat left top;}
+.footer_control .view_way dl.view_month dd{ text-align:center; color:#fff; font-size:12px;}
+.footer_control .view_way dl.view_month.on dt{background:url(../images/little_book_month.jpg) no-repeat left top;}
+
+
+.new_btn{ position:absolute; right:0;}
+.new_btn a{ width:40px; background:url(../images/little_book_new.jpg) no-repeat; padding-top:40px; color:#fff; text-align:center; font-size:12px; display:inline-block}
+
+.little_book_right .little_book_content .textarea p{ color:#333; line-height:20px; padding-bottom:10px;}
+.little_book_right .little_book_content .textarea p img{max-width:600px; overflow:hidden;}

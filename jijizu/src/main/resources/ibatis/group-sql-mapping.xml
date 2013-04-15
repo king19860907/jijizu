@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap >
+  
+  <!-- 保存集集组 -->
+  <insert id="saveGroup" parameterClass="java.util.Map">
+    <selectKey resultClass="Long" type="pre" keyProperty="groupId">
+		SELECT seq_j_group_info_id.nextval AS VALUE FROM DUAL
+	</selectKey>
+  	insert into j_group_info jgi
+	  (jgi.group_id,
+	   jgi.title,
+	   jgi.group_desc,
+	   jgi.start_date,
+	   jgi.end_date,
+	   jgi.poster_img_url,
+	   jgi.address,
+	   jgi.cost,
+	   jgi.enter_type,
+	   jgi.user_id,
+	   jgi.province,
+	   jgi.city,
+	   jgi.district,
+	   jgi.enter_Type_Detail,
+	   jgi.apply_end_date,
+	   jgi.start_age,
+	   jgi.end_age,
+	   jgi.apply_num,
+	   jgi.parents_limit)
+	values
+	  (#groupId#,
+	   #title#,
+	   #groupDesc#,
+	   #startDate#,
+	   #endDate#,
+	   #posterImgUrl#,
+	   #address#,
+	   #cost#,
+	   #enterType#,
+	   #userId#,
+	   #province#,
+	   #city#,
+	   #district#,
+	   #enterTypeDetail#,
+	   #applyEndDate#,
+	   #startAge#,
+	   #endAge#,
+	   #applyNum#,
+	   #parentsLimit#)
+  </insert>
+  
+  <resultMap id="groupInfo" class="com.jijizu.core.group.dto.GroupInfo">
+		<result column="group_id" property="groupId" />
+		<result column="title" property="title" />
+		<result column="group_desc" property="groupDesc" />
+		<result column="start_date" property="startDate" />
+		<result column="end_date" property="endDate" />
+		<result column="poster_img_url" property="posterImgUrl" />
+		<result column="address" property="address" />
+		<result column="cost" property="cost" />
+		<result column="enter_type" property="enterType" />
+		<result column="create_date" property="createdate" />
+		<result column="update_date" property="updateDate" />
+		<result column="user_id" property="userId" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="enter_num" property="enterNum" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="district" property="district" />
+		<result column="name" property="userName" />
+		<result column="v_flag" property="vFlag" />
+		<result column="enterprise_flag" property="enterpriseFlag" />
+		<result column="enter_type_detail" property="enterTypeDetail" />
+		<result column="apply_end_date" property="applyEndDate" />
+		<result column="start_age" property="startAge" />
+		<result column="end_age" property="endAge" />
+		<result column="apply_num" property="applyNum" />
+		<result column="parents_limit" property="parentsLimit" />
+  </resultMap>
+  
+  <!-- 根据ID获取集集组信息 -->
+  <select id="getGroupInfoById" parameterClass="java.lang.Long" resultMap="groupInfo">
+	 select jgi.*,jui.name,jui.v_flag,jui.enterprise_flag from j_group_info jgi,j_user_info jui where jgi.group_id = #groupId# and jgi.user_id = jui.user_id and jgi.cancel_flag = 0 and rownum = 1
+  </select>
+  
+  <!-- 查询集集组 -->
+  <sql id="findGroupInfoPage_sql">
+  	  select jgi.*, jui.name,jui.v_flag,jui.enterprise_flag
+	     from j_group_info jgi, j_user_info jui
+	    where jgi.user_id = jui.user_id
+	    and jgi.enter_type <![CDATA[ <> ]]> 'GROUP_ENTER_TYPE_INVITE'
+	    and jgi.cancel_flag = 0
+	    order by jgi.create_date desc
+  </sql>
+  <select id="findGroupInfoPage" parameterClass="java.util.Map" resultMap="groupInfo">
+		<include refid="pageBegin" />		
+		<include refid="findGroupInfoPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findGroupInfoPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findGroupInfoPage_sql" />
+		) A
+  </select>
+  
+  <!-- 查询正在召集的集集组 -->
+  <select id="findConveneGroup" parameterClass="java.util.Map" resultMap="groupInfo">
+  	select * from (select jgi.*, jui.name,jui.v_flag,jui.enterprise_flag
+	     from j_group_info jgi, j_user_info jui
+	    where jgi.user_id = jui.user_id
+	    and jgi.enter_type <![CDATA[ <> ]]> 'GROUP_ENTER_TYPE_INVITE'
+	    and jgi.cancel_flag = 0
+	    and jgi.start_date > sysdate
+	    order by jgi.start_date asc) where rownum <![CDATA[ <= ]]> #rownum#
+  </select>
+  
+  <!-- 查询我发起的集集组 -->
+  <sql id="findMyCreateGroupPage_sql">
+  	   select jgi.*, jui.name,jui.v_flag,jui.enterprise_flag
+	     from j_group_info jgi, j_user_info jui
+	    where jgi.user_id = jui.user_id
+	    and jgi.user_id = #userId#
+	    and jgi.cancel_flag = 0
+	    order by jgi.create_date desc
+  </sql>
+  <select id="findMyCreateGroupPage" parameterClass="java.util.Map" resultMap="groupInfo">
+		<include refid="pageBegin" />		
+		<include refid="findMyCreateGroupPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findMyCreateGroupPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findMyCreateGroupPage_sql" />
+		) A
+  </select>
+  
+  <!-- 查询我参加的集集组 -->
+  <sql id="findMyEnterGroupPage_sql">
+  	 select jgi.*, jui.name,jui.v_flag,jui.enterprise_flag
+        from j_group_users jgu, j_group_info jgi, j_user_info jui
+       where jgu.user_id = #userId#
+         and jgu.group_id = jgi.group_id
+         and jui.user_id = jgi.user_id
+         and jgi.cancel_flag = 0
+       order by jgi.create_date desc
+  </sql>
+   <select id="findMyEnterGroupPage" parameterClass="java.util.Map" resultMap="groupInfo">
+		<include refid="pageBegin" />		
+		<include refid="findMyEnterGroupPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findMyEnterGroupPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findMyEnterGroupPage_sql" />
+		) A
+  </select>
+  
+  <!-- 保存参加集集组记录 -->
+  <insert id="saveGroupUsers" parameterClass="java.util.Map">
+  	<selectKey resultClass="Long" type="pre" keyProperty="id">
+		SELECT seq_j_group_users_id.nextval AS VALUE FROM DUAL
+	</selectKey>
+  	 insert into j_group_users jgu
+      (jgu.id,
+       jgu.user_id,
+       jgu.group_id,
+       jgu.create_date,
+       jgu.join_status,
+       jgu.name,
+       jgu.child_name,
+       jgu.mobile,
+       jgu.address,
+       jgu.adult_num)
+    values
+      (#id#,
+       #userId#,
+       #groupId#,
+       sysdate,
+       #joinStatus#,
+       #name#,
+       #childName#,
+       #mobile#,
+       #address#,
+       #adultNum#)
+  </insert>
+  
+  <resultMap id="groupUsers" class="com.jijizu.core.group.dto.GroupUsers">
+		<result column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="group_id" property="groupId" />
+		<result column="create_date" property="createDate" />
+		<result column="join_status" property="joinStatus" />
+		<result column="name" property="name" />
+		<result column="child_name" property="childName" />
+		<result column="mobile" property="mobile" />
+		<result column="address" property="address" />
+		<result column="head_img_url" property="headImgUrl" />
+		<result column="friend_num" property="friendNum" />
+		<result column="status_num" property="statusNum" />
+		<result column="adult_num" property="adultNum" />
+  </resultMap>
+  
+  <!-- 根据集集组ID和用户ID获取用户参加集集组信息 -->
+  <select id="getGroupUsersByGroupIdAndUserId" parameterClass="java.util.Map" resultMap="groupUsers">
+  	 select jgu.*,jui.head_img_url,jui.friend_num,jui.status_num
+           from j_group_users jgu, j_user_info jui
+          where jgu.user_id = #userId#
+            and jui.user_id = jgu.user_id
+            and jgu.group_id = #groupId#
+            and rownum = 1
+  </select>
+  
+  <!-- 根据集集组ID和用户ID删除用户参加集集组信息 -->
+  <delete id="deleteGroupUsersByGroupIdAndUserId" parameterClass="java.util.Map">
+  	 delete from j_group_users jgu where jgu.user_id = #userId# and jgu.group_id = #groupId#
+  </delete>
+  
+  <!-- 更新集集组参加人数 -->
+  <update id="updateGroupEnterNum" parameterClass="java.lang.Long">
+  	update j_group_info jgi
+          set jgi.enter_num = (  select sum(enter_num)
+						           from (select nvl(sum(jgu.adult_num), 0) as enter_num
+                                 from j_group_users jgu
+						                  where jgu.group_id = #groupId#
+						                    and jgu.join_status <![CDATA[ <> ]]> 'GROUP_JOIN_STATUS_WAIT'
+						                 union all
+						                 select count(*)
+						                   from j_group_childs jgc
+						                  where jgc.group_id = #groupId#
+						                    and jgc.user_id in
+						                        (select jgu.user_id
+						                           from j_group_users jgu
+						                          where jgu.group_id = #groupId#
+						                            and jgu.join_status <![CDATA[ <> ]]> 'GROUP_JOIN_STATUS_WAIT')))
+        where jgi.group_id = #groupId#
+  </update>
+  
+  <!-- 查询集集组参加的用户 -->
+  <sql id="findGroupUsersPage_sql">
+  	  select jgu.*,jui.head_img_url,jui.friend_num,jui.status_num
+          from j_group_users jgu, j_user_info jui
+         where jgu.group_id = #groupId#
+           and jui.user_id = jgu.user_id
+           and jgu.join_status <![CDATA[ <> ]]> 'GROUP_JOIN_STATUS_WAIT'
+         order by jgu.create_date desc
+  </sql>
+   <select id="findGroupUsersPage" parameterClass="java.util.Map" resultMap="groupUsers">
+		<include refid="pageBegin" />		
+		<include refid="findGroupUsersPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findGroupUsersPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findGroupUsersPage_sql" />
+		) A
+  </select>
+  
+  <!-- 根据加入状态查询集集组用户 -->
+  <select id="findGroupUsersByJoinStatus" resultMap="groupUsers" parameterClass="java.util.Map">
+  	select jgu.*,jui.head_img_url,jui.friend_num,jui.status_num
+          from j_group_users jgu, j_user_info jui
+         where jgu.group_id = #groupId#
+           and jui.user_id = jgu.user_id
+           and jgu.join_status = #joinStatus#
+         order by jgu.create_date asc
+  </select>
+  
+  <!-- 查询集集组参加的用户-包含等待区域的用户 -->
+  <sql id="findGroupUsersAllPage_sql">
+  	  select jgu.*,jui.head_img_url,jui.friend_num,jui.status_num
+          from j_group_users jgu, j_user_info jui
+         where jgu.group_id = #groupId#
+           and jui.user_id = jgu.user_id
+         order by jgu.join_status asc,jgu.create_date desc
+  </sql>
+   <select id="findGroupUsersAllPage" parameterClass="java.util.Map" resultMap="groupUsers">
+		<include refid="pageBegin" />		
+		<include refid="findGroupUsersAllPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findGroupUsersAllPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findGroupUsersPage_sql" />
+		) A
+  </select>
+  
+  <!-- 根据城市查询推荐的集集组 -->
+  <select id="findRecommendGroupByCity" parameterClass="java.util.Map" resultMap="groupInfo">
+  	select * from (select jgi.*,jui.name,jui.v_flag,jui.enterprise_flag
+           from j_group_info jgi,j_user_info jui
+          where jgi.cancel_flag = 0
+            and jgi.start_date <![CDATA[ > ]]> sysdate
+            <isNotNull property="userId">
+            	and jgi.city = #city#
+            </isNotNull>
+            and jgi.enter_type <![CDATA[ <> ]]> 'GROUP_ENTER_TYPE_INVITE'
+            <isNotNull property="userId">
+	            and jgi.group_id not in
+	                (select jgu.group_id
+	                   from j_group_users jgu
+	                  where jgu.user_id = #userId#)
+	            and jgi.user_id <![CDATA[ <> ]]> #userId#
+            </isNotNull>
+            and jgi.user_id = jui.user_id
+            order by dbms_random.random)
+            where rownum <![CDATA[ <= ]]> #rownum#
+  </select>
+  
+  <!-- 根据城市查询热门集集组 -->
+  <select id="findHotGroupByCity" parameterClass="java.util.Map" resultMap="groupInfo">
+  	select * from (select jgi.*,jui.name,jui.v_flag,jui.enterprise_flag
+           from j_group_info jgi,j_user_info jui
+          where jgi.cancel_flag = 0
+            and jgi.start_date <![CDATA[ > ]]> sysdate
+            and jgi.city = #city#
+            and jgi.enter_type <![CDATA[ <> ]]> 'GROUP_ENTER_TYPE_INVITE'
+            and jgi.user_id = jui.user_id
+            order by jgi.start_date asc)
+            where rownum <![CDATA[ <= ]]> #rownum#
+  </select>
+  
+  <!-- 查询集集组微博 -->
+  <sql id="findGroupStatusPage_sql">
+	  select jsi.*,jui.name, jui.head_img_url,jui.nickname,jui.v_flag,jui.enterprise_flag
+              from j_status_info jsi, j_user_info jui
+             where jsi.group_id = #groupId#
+               and jsi.cancel_flag = 0
+               and jsi.user_id = jui.user_id
+               and jsi.not_show_flag = 0
+               order by jsi.post_time desc
+	</sql>
+	<select id="findGroupStatusPage" parameterClass="java.util.Map" resultMap="statusInfoWithFwdSrc">
+		<include refid="pageBegin" />		
+		<include refid="findGroupStatusPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findGroupStatusPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findGroupStatusPage_sql" />
+		) A
+	</select>
+	
+	<!-- 删除集集组 -->
+	<update id="deleteGroup" parameterClass="java.lang.Long">
+		 update j_group_info jgi set jgi.cancel_flag = 1 where jgi.group_id = #groupId#
+	</update>
+	
+	<!-- 集集组通过审核 -->
+	<update id="passGroupUser" parameterClass="java.util.Map">
+		 update j_group_users jgu set jgu.join_status = 'GROUP_JOIN_STATUS_PASS' where jgu.group_id = #groupId# and jgu.user_id = #userId#
+	</update>
+	
+	<!-- 修改集集参加用户的加入状态 -->
+	<update id="updateGroupUserJoinStatus" parameterClass="java.util.Map">
+		 update j_group_users jgu set jgu.join_status = #joinStatus# where jgu.group_id = #groupId# and jgu.user_id = #userId#	
+	</update>
+	
+	<!-- 删除用户参加集集组信息 -->
+	<delete id="deleteGroupUser" parameterClass="java.util.Map">
+		delete from j_group_users jgu where jgu.group_id = #groupId# and jgu.user_id = #userId# 
+	</delete>
+	
+	<!-- 更新集集组 -->
+	<update id="updateGroup" parameterClass="java.util.Map">
+		 update j_group_info jgi
+          set jgi.title          = #title#,
+              jgi.group_desc     = #groupDesc#,
+              jgi.start_date     = #startDate#,
+              jgi.end_date       = #endDate#,
+              jgi.poster_img_url = #posterImgUrl#,
+              jgi.address        = #address#,
+              jgi.cost           = #cost#,
+              jgi.enter_type     = #enterType#,
+              jgi.update_date    = sysdate,
+              jgi.province       = #province#,
+              jgi.city           = #city#,
+              jgi.district       = #district#,
+              jgi.enter_type_detail = #enterTypeDetail#,
+              jgi.apply_end_date = #applyEndDate#,
+              jgi.start_age = #startAge#,
+              jgi.end_age = #endAge#,
+              jgi.apply_num = #applyNum#,
+              jgi.parents_limit = #parentsLimit#
+        where jgi.group_id = #groupId#
+	</update>
+  
+	<!-- 保存孩子参加集集组信息 -->
+	<insert id="saveGroupChilds" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="id">
+			SELECT seq_j_group_childs_id.nextval AS VALUE FROM DUAL
+		</selectKey>
+		 insert into j_group_childs jgc
+		   (jgc.id, jgc.user_id, jgc.child_id, jgc.group_id, jgc.create_date)
+		 values
+		   (#id#, #userId#, #childId#, #groupId#, sysdate)
+	</insert>
+	
+	<!-- 删除孩子参加集集组信息 -->
+	<delete id="deleteGroupChilds" parameterClass="java.util.Map">
+		delete from j_group_childs jgc where jgc.user_id = #userId# and jgc.group_id = #groupId#
+	</delete>
+  
+</sqlMap>

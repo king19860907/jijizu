@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap >
+  
+  <resultMap id="mailInfo" class="com.jijizu.core.mail.dto.MailInfo">
+		<result column="mail_id" property="mailId" />
+		<result column="from_user_id" property="fromUserId" />
+		<result column="to_user_id" property="toUserId" />
+		<result column="send_date" property="sendDate" />
+		<result column="mail_content" property="mailContent" />
+  </resultMap>
+  
+  <resultMap id="mailShow" class="com.jijizu.core.mail.dto.MailShow">
+		<result column="mail_show_id" property="mailShowId" />
+		<result column="user_id" property="userInfo" select="getUserInfoById" />
+		<result column="mail_user_id" property="mailUserInfo" select="getUserInfoById" />
+		<result column="last_mail_date" property="lastMailDate" />
+		<result column="last_direction" property="lastDirection" />
+		<result column="last_mail_content" property="lastMailContent" />
+		<result column="new_mail_num" property="newMailNum" />
+		<result column="mail_num" property="mailNum" />
+   </resultMap>
+   
+   <resultMap id="mailDetail" class="com.jijizu.core.mail.dto.MailDetail">
+		<result column="mail_detail_id" property="mailDetailId" />
+		<result column="mail_show_id" property="mailShowId" />
+		<result column="mail_id" property="mailId" />
+		<result column="mail_date" property="mailDate" />
+		<result column="direction" property="direction" />
+		<result column="mail_content" property="mailContent" />
+		<result column="delete_flag" property="deleteFlag" />
+	</resultMap>
+	
+	<!-- 保存私信 -->
+	<insert id="saveMail" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="mailId">
+			SELECT seq_j_mail_info_id.nextval AS VALUE FROM DUAL
+		</selectKey>
+		insert into j_mail_info jmi
+		  (jmi.mail_id,
+		   jmi.from_user_id,
+		   jmi.to_user_id,
+		   jmi.send_date,
+		   jmi.mail_content)
+		values
+		  (#mailId#,
+		   #fromUserId#,
+		   #toUserId#,
+		   sysdate,
+		   #mailContent#)
+	</insert>
+	
+	<!-- 查看私信 -->
+	<sql id="findMailShowPage_sql">
+		select *
+		  from j_mail_show jmh
+		 where jmh.user_id = #userId#
+		   and jmh.mail_num <![CDATA[>]]> 0
+		 order by jmh.last_mail_date desc, jmh.new_mail_num desc
+	</sql>
+	<select id="findMailShowPage" parameterClass="java.util.Map" resultMap="mailShow">
+		<include refid="pageBegin" />		
+		<include refid="findMailShowPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findMailShowPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findMailShowPage_sql" />
+		) A
+	</select>
+	
+	<!-- 进入私信界面更新最新私信记录数 -->
+	<update id="updateNewMailNumByShowMail" parameterClass="java.util.Map">
+		update j_mail_show sms
+   set sms.new_mail_num = 0
+ where sms.new_mail_num = 1
+   and sms.mail_show_id in (SELECT b.mail_show_id
+                              FROM (SELECT a.*, ROWNUM num
+                                      FROM (<include refid="findMailShowPage_sql" />	) a
+                                     where ROWNUM <![CDATA[<=]]> #endRowNum#) b
+                             WHERE num <![CDATA[>]]> #startRowNum#)
+	</update>
+	
+	<!-- 更新用户的最新私信记录数 -->
+	<update id="updateSnsUserNewMailByUserId" parameterClass="java.lang.Long">
+		update j_user_info msu set msu.new_mail_num = 0 where msu.user_id = #userId#
+	</update>
+	
+	<!-- 根据mail_show_id删除私信记录 -->
+	<update id="deleteMailDetailByShwoId" parameterClass="java.lang.Long">
+		 update J_MAIL_DETAIL set delete_flag=1 where mail_show_id=#mailShowId#
+	</update>
+	
+	<!-- 根据mail_detail_id删除私信记录 -->
+	<update id="deleteMailDetailByDetailId" parameterClass="java.lang.Long">
+		update J_MAIL_DETAIL set delete_flag=1 where mail_detail_id= #mailDetailId#
+	</update>
+	
+	<!-- 获取私信显示记录 -->
+	<select id="getMailShowById" parameterClass="java.lang.Long" resultMap="mailShow">
+		 select * from j_mail_show sms where sms.mail_show_id = #mailShowId# and rownum = 1
+	</select>
+	
+	<!-- 获取私信详细记录 -->
+	<select id="getMailDetailById" parameterClass="java.lang.Long" resultMap="mailDetail">
+		 select * from j_mail_detail smd where smd.mail_detail_id = #mailDetailId# and rownum = 1
+	</select>
+	
+	<!-- 查看我与某人的私信对话 -->
+	<sql id="findMailDetailPage_sql">
+		select smd.*
+		  from j_mail_detail smd
+		 where smd.mail_show_id = #mailShowId#
+		   and smd.delete_flag = 0
+		 order by smd.mail_date desc
+	</sql>
+	 <select id="findMailDetailPage" parameterClass="java.util.Map" resultMap="mailDetail">
+		<include refid="pageBegin" />		
+		<include refid="findMailDetailPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+	<select id="findMailDetailPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findMailDetailPage_sql" />
+		) A
+	</select>
+	
+	<!-- 进入私信详细页面界面更新最新私信记录数 -->
+	<update id="updateNewMailNumByMailShowId" parameterClass="java.lang.Long">
+		update J_MAIL_SHOW set new_mail_num=0 where mail_show_id=#mailShowId#
+	</update>
+	
+	<!-- 更新mailshow表中的内容 -->
+	<update id="updateMailShowContent" parameterClass="java.util.Map">
+		update j_mail_show jms set jms.last_mail_content = #content# where jms.mail_show_id = #mailShowId#
+	</update>
+	
+	<!-- 更具mailShowID更新相关的最后一条mailDetail的内容 -->
+	<update id="updateLastMailDetailContentByMailShowId" parameterClass="java.util.Map">
+		update j_mail_detail jmd
+		   set jmd.mail_content = #content#
+		 where jmd.mail_detail_id = (select mail_detail_id
+		                               from (select *
+		                                       from j_mail_detail jmd
+		                                      where jmd.mail_show_id = #mailShowId#
+		                                      order by jmd.mail_detail_id desc)
+		                              where rownum = 1)
+	</update>
+	
+	<!-- 根据mailDetailId更新mailDetail的内容 -->
+	<update id="updateMailDetailByMailDetailId" parameterClass="java.util.Map">
+		update j_mail_detail jmd set jmd.mail_content = #content# where jmd.mail_detail_id = #mailDetailId#
+	</update>
+	
+	<!-- 根据mailDetailId获取该系列最后一条mailDetail -->
+	<select id="getLastMailDetailIdByMailDetailId" parameterClass="java.lang.Long" resultClass="java.lang.Long">
+		select mail_detail_id
+			  from (select *
+			          from j_mail_detail jmd
+			         where jmd.mail_show_id =
+			               (select jmd.mail_show_id
+			                  from j_mail_detail jmd
+			                 where jmd.mail_detail_id = #mailDetailId#)
+			         order by jmd.mail_detail_id desc)
+			 where rownum = 1
+	</select>
+	
+	<!-- 根据mailDetailId更新mailshow内容 -->
+	<update id="updateMailShowContentByMailDetailId" parameterClass="java.util.Map">
+		update j_mail_show jms
+		   set jms.last_mail_content = #content#
+		 where jms.mail_show_id =
+		       (select jmd.mail_show_id
+		          from j_mail_detail jmd
+		         where jmd.mail_detail_id = #mailDetailId#)
+	</update>
+	
+</sqlMap>

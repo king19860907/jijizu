@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<!-- 新建小本本验证 -->
+	<bean id="addDiaryCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="statusLastContentNotRepeatCheck"/>
+				<ref bean="statusContentNotOnlyContainsPunctuation"/>
+				<ref bean="statusContentNotOnlyContainsSpecialChar"/>
+				<ref bean="statusContentNotContansIllegalwordsCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 更新小本本验证 -->
+	<bean id="updateDiaryCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="statusContentNotOnlyContainsPunctuation"/>
+				<ref bean="statusContentNotOnlyContainsSpecialChar"/>
+				<ref bean="statusContentNotContansIllegalwordsCheck"/>
+				<ref bean="diaryExistCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 删除小本本验证 -->
+	<bean id="deleteDiaryCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="diaryExistCheck"/>
+				<ref bean="diaryBelongToUserCheck"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="diaryDAO" class="com.jijizu.core.diary.dao.impl.DiaryDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="diaryService" class="com.jijizu.core.diary.service.impl.DiaryServiceImpl" >
+		<property name="diaryDAO" ref="diaryDAO"/>
+		<property name="userInfoDAO" ref="userInfoDAO"/>
+		<property name="statusService" ref="statusService"/>
+		<property name="addDiaryCheckContext" ref="addDiaryCheckContext"/>
+		<property name="deleteDiaryCheckContext" ref="deleteDiaryCheckContext"/>
+		<property name="updateDiaryCheckContext" ref="updateDiaryCheckContext"/>
+	</bean>
+	
+</beans>

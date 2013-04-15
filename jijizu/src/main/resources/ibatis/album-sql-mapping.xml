@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap >
+  
+  <!-- 保存相册 -->
+  <insert id="saveAlbum" parameterClass="java.util.Map">
+    <selectKey resultClass="Long" type="pre" keyProperty="albumId">
+		SELECT seq_j_album_info_id.nextval AS VALUE FROM DUAL
+	</selectKey>
+  	insert into j_album_info jai
+                   (jai.album_id,
+                    jai.name,
+                    jai.content,
+                    jai.create_date,
+                    jai.update_date,
+                    jai.cancel_flag,
+                    jai.group_id,
+                    jai.default_photo_id,
+                    jai.user_id,
+                    jai.create_user_id)
+                 values
+                   (#albumId#,
+                    #name#,
+                    #content#,
+                    sysdate,
+                    sysdate,
+                    0,
+                    #groupId#,
+                    #defaultPhotoId#,
+                    #userId#,
+                    #createUserId#)
+  </insert>
+  
+  <resultMap id="albumInfo" class="com.jijizu.core.album.dto.AlbumInfo">
+		<result column="album_id" property="albumId" />
+		<result column="name" property="name" />
+		<result column="content" property="content" />
+		<result column="create_date" property="createDate" />
+		<result column="update_date" property="updateDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="group_id" property="groupId" />
+		<result column="default_photo_id" property="defaultPhotoId" />
+		<result column="user_id" property="userId" />
+		<result column="create_user_id" property="createUserId" />
+		<result column="photo_num" property="photoNum" />
+		<result column="img_url" property="defaultPhotoImgUrl" />
+  </resultMap>
+  
+  <!-- 获取用户默认相册 -->
+  <select id="getUserDefaultAlbum" parameterClass="java.lang.Long" resultMap="albumInfo">
+  	select jai.*,jpi.img_url
+                  from j_album_info jai,j_photo_info jpi
+                 where jai.user_id = #userId#
+                   and jai.default_photo_id = jpi.photo_id(+)
+                   and jai.name = '默认专辑'
+                   and rownum = 1
+  </select>
+  
+  <!-- 获取用户微博配图 -->
+  <select id="getUserStatusAlbum" parameterClass="java.lang.Long" resultMap="albumInfo">
+  	select jai.*,jpi.img_url
+                  from j_album_info jai,j_photo_info jpi
+                 where jai.user_id = #userId#
+                   and jai.default_photo_id = jpi.photo_id(+)
+                   and jai.name = '微博配图'
+                   and rownum = 1
+  </select>
+  
+  <!-- 获取集集组默认相册 -->
+  <select id="getGroupDefaultAlbum" parameterClass="java.lang.Long" resultMap="albumInfo">
+  	select jai.*,jpi.img_url
+                  from j_album_info jai,j_photo_info jpi
+                 where jai.group_id = #groupId#
+                   and jai.default_photo_id = jpi.photo_id(+)
+                   and jai.name = '默认专辑'
+                   and rownum = 1
+  </select>
+  
+  <!-- 保存照片 -->
+  <insert id="savePhoto" parameterClass="java.util.Map">
+  	<selectKey resultClass="Long" type="pre" keyProperty="photoId">
+		SELECT seq_j_photo_info_id.nextval AS VALUE FROM DUAL
+	</selectKey>
+  	 insert into j_photo_info jpi
+                      (jpi.photo_id,
+                       jpi.name,
+                       jpi.content,
+                       jpi.album_id,
+                       jpi.create_date,
+                       jpi.update_date,
+                       jpi.cancel_flag,
+                       jpi.img_url,
+                       jpi.status_id,
+                       jpi.group_id,
+                       jpi.create_user_id)
+                    values
+                      (#photoId#,
+                       #name#,
+                       #content#,
+                       #albumId#,
+                       sysdate,
+                       sysdate,
+                       0,
+                       #imgUrl#,
+                       #statusId#,
+                       #groupId#,
+                       #createUserId#)
+  	
+  </insert>
+  
+  <!-- 更新相册默认照片 -->
+  <update id="updateAlbumDefaultPhoto" parameterClass="java.util.Map">
+  	update j_album_info jai set jai.default_photo_id = #defaultPhotoId# where jai.album_id = #albumId#
+  </update>
+  
+  <!-- 更新相册照片数量 -->
+  <update id="updateAlbumPhotoNum" parameterClass="java.util.Map">
+  	update j_album_info jai
+                          set jai.photo_num =
+                              (select count(*)
+                                 from j_photo_info jpi
+                                where jpi.album_id = #albumId#
+                                  and jpi.cancel_flag = 0) where jai.album_id = #albumId#
+  </update>
+  
+  <!-- 查询用户相册 -->
+  <sql id="findUserAlbumPage_sql">
+  	 select jai.*,jpi.img_url
+                         from j_album_info jai,j_photo_info jpi
+                        where jai.user_id = #userId#
+                          and jai.cancel_flag = 0
+                          and jai.default_photo_id = jpi.photo_id(+)
+                          and jai.group_id is null
+                        order by jai.create_date desc
+  </sql>
+   <select id="findUserAlbumPage" parameterClass="java.util.Map" resultMap="albumInfo">
+		<include refid="pageBegin" />		
+		<include refid="findUserAlbumPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findUserAlbumPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findUserAlbumPage_sql" />
+		) A
+  </select>
+  
+  <!-- 获取相册信息 -->
+  <select id="getAlbumById" parameterClass="java.lang.Long" resultMap="albumInfo">
+  	select jai.*, jpi.img_url
+                          from j_album_info jai, j_photo_info jpi
+                         where jai.album_id = #albumId#
+                           and jai.default_photo_id = jpi.photo_id(+)
+                           and jai.cancel_flag = 0
+                           and rownum = 1
+  </select>
+  
+  <!-- 删除相册 -->
+  <update id="deleteAlbum" parameterClass="java.lang.Long">
+  	  update j_album_info jai set jai.cancel_flag = 1 where jai.album_id = #albumId#
+  </update>
+  
+  <!-- 更新相册信息 -->
+  <update id="updateAlbum" parameterClass="java.util.Map">
+  	update j_album_info jai
+                              set jai.name        = #name#,
+                                  jai.content     = #content#,
+                                  jai.update_date = sysdate
+                            where jai.album_id = #albumId#.
+  </update>
+  
+  <resultMap id="photoInfo" class="com.jijizu.core.album.dto.PhotoInfo">
+		<result column="photo_Id" property="photoId" />
+		<result column="name" property="name" />
+		<result column="content" property="content" />
+		<result column="create_date" property="createDate" />
+		<result column="update_date" property="updateDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="img_url" property="imgUrl" />
+		<result column="status_id" property="statusId" />
+		<result column="group_id" property="groupId" />
+		<result column="create_user_id" property="createUserId" />
+		<result column="album_id" property="albumId" />
+  </resultMap>
+  
+  <!-- 查询相册照片 -->
+  <sql id="findPhotoPage_sql">
+  	 select * from j_photo_info jpi where jpi.album_id = #albumId# and jpi.cancel_flag = 0 order by jpi.photo_id desc
+  </sql>
+   <select id="findPhotoPage" parameterClass="java.util.Map" resultMap="photoInfo">
+		<include refid="pageBegin" />		
+		<include refid="findPhotoPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findPhotoPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findPhotoPage_sql" />
+		) A
+  </select>
+  
+  <!-- 查询相册照片 -->
+  <sql id="findPhotoByUserIdPage_sql">
+  	 select *
+                                   from j_photo_info jpi
+                                  where jpi.create_user_id = #userId#
+                                    and jpi.cancel_flag = 0
+                                    and jpi.group_id is null
+                                  order by jpi.create_date desc
+  </sql>
+   <select id="findPhotoByUserIdPage" parameterClass="java.util.Map" resultMap="photoInfo">
+		<include refid="pageBegin" />		
+		<include refid="findPhotoByUserIdPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findPhotoByUserIdPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findPhotoByUserIdPage_sql" />
+		) A
+  </select>
+  
+  <!-- 通过groupId查询照片 -->
+  <sql id="findPhotoByGroupIdPage_sql">
+  	   select *
+                                   from j_photo_info jpi
+                                  where jpi.group_id = #groupId#
+                                    and jpi.cancel_flag = 0
+                                  order by jpi.photo_id desc
+  </sql>
+   <select id="findPhotoByGroupIdPage" parameterClass="java.util.Map" resultMap="photoInfo">
+		<include refid="pageBegin" />		
+		<include refid="findPhotoByGroupIdPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findPhotoByGroupIdPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findPhotoByGroupIdPage_sql" />
+		) A
+  </select>
+  
+  <!-- 删除照片 -->
+  <update id="deletePhoto" parameterClass="java.lang.Long">
+  	 update j_photo_info jpi set jpi.cancel_flag = 1 where jpi.photo_id = #photoId#
+  </update>
+  
+  <!-- 获取照片信息 -->
+  <select id="getPhotoInfoById" parameterClass="java.lang.Long" resultMap="photoInfo">
+  	select *
+                              from j_photo_info jpi
+                             where jpi.photo_id = #photoId#
+                               and jpi.cancel_flag = 0
+                               and rownum = 1
+  </select>
+  
+  <!-- 更新照片信息 -->
+  <update id="updatePhotoInfo" parameterClass="java.util.Map">
+  	 update j_photo_info jpi
+                                  set jpi.name        = #name#,
+                                      jpi.content     = #content#,
+                                      jpi.update_date = sysdate
+                                where jpi.photo_id = #photoId#
+  </update>
+  
+  <!-- 批量修改照片所属相册 -->
+  <update id="updatePhotoAlbumIdBatch" parameterClass="java.util.Map">
+  	update j_photo_info jpi set jpi.album_id = #albumId# where jpi.photo_id in 
+  	<iterate property="photoIds" open="(" close=")" conjunction=",">
+  	 #photoIds[]# 
+  	 </iterate>
+  </update>
+  
+  <!-- 批量删除照片 -->
+  <update id="deletePhotoBatch" parameterClass="java.util.Map">
+  	 update j_photo_info jpi set jpi.cancel_flag = 1 where jpi.photo_id in
+  	 <iterate property="photoIds" open="(" close=")" conjunction=",">
+  		 #photoIds[]# 
+  	 </iterate>
+  </update>
+  
+  <!-- 获取下一张照片 -->
+  <select id="getNextPhotoById" parameterClass="java.util.Map" resultMap="photoInfo">
+  	 select *
+                                 from (select *
+                                         from j_photo_info jpi
+                                        where jpi.photo_id <![CDATA[ < ]]> #photoId#
+                                          and jpi.album_id = #albumId#
+                                          and jpi.cancel_flag = 0
+                                        order by jpi.photo_id DESC)
+                                where rownum = 1
+  </select>
+  
+  <!-- 获取上一张照片 -->
+  <select id="getPrePhotoById" parameterClass="java.util.Map" resultMap="photoInfo">
+  	 select *
+                                  from (select *
+                                          from j_photo_info jpi
+                                         where jpi.photo_id <![CDATA[ > ]]> #photoId#
+                                           and jpi.album_id = #albumId#
+                                           and jpi.cancel_flag = 0
+                                         order by jpi.photo_id asc)
+                                 where rownum = 1
+  </select>
+  
+  <!-- 集集组获取下一张照片 -->
+  <select id="getGroupNextPhotoById" parameterClass="java.util.Map" resultMap="photoInfo">
+  	 select *
+                                 from (select *
+                                         from j_photo_info jpi
+                                        where jpi.photo_id <![CDATA[ < ]]> #photoId#
+                                          and jpi.group_Id = #groupId#
+                                          and jpi.cancel_flag = 0
+                                        order by jpi.photo_id DESC)
+                                where rownum = 1
+  </select>
+  
+  <!-- 集集组获取上一张照片 -->
+  <select id="getGroupPrePhotoById" parameterClass="java.util.Map" resultMap="photoInfo">
+  	 select *
+                                  from (select *
+                                          from j_photo_info jpi
+                                         where jpi.photo_id <![CDATA[ > ]]> #photoId#
+                                           and jpi.group_Id = #groupId#
+                                           and jpi.cancel_flag = 0
+                                         order by jpi.photo_id asc)
+                                 where rownum = 1
+  </select>
+  
+</sqlMap>

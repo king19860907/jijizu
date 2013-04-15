@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<!-- 不包含民命空间的url  -->
+	<package name="follow" extends="strutsqs" namespace="/follow">
+		<!-- 获取at好友内容 -->
+		<action name="findFirends" class="com.jijizu.web.follow.action.FollowAction" method="findFirends">
+				<result name="success">/status/inc/friends_inc.jsp</result>
+		</action>
+		<!-- 获取共同好友 -->
+		<action name="findCommonFriends" class="com.jijizu.web.follow.action.FollowAction" method="findCommonFriends">
+				<result name="success">/status/inc/common_friends_inc.jsp</result>
+		</action>
+		<!-- ajax -->
+		<!-- 关注用户 -->
+		<action name="followUser" class="com.jijizu.web.follow.action.FollowActionAjax" method="followUser"/>
+		<!-- 拒绝关注 -->
+		<action name="refuseFollow" class="com.jijizu.web.follow.action.FollowActionAjax" method="refuseFollow"/>
+		<!-- 取消关注 -->
+		<action name="followCancel" class="com.jijizu.web.follow.action.FollowActionAjax" method="followCancel"/>
+		<!-- 查询所at的用户 -->
+		<action name="findAtFirendsJson" class="com.jijizu.web.follow.action.FollowActionAjax" method="findAtFirendsJson"/>
+		<!-- 批量关注用户 -->
+		<action name="followUserBatch" class="com.jijizu.web.follow.action.FollowActionAjax" method="followUserBatch"/>
+		<!-- 批量取消关注 -->
+		<action name="followCancelBatch" class="com.jijizu.web.follow.action.FollowActionAjax" method="followCancelBatch"/>
+    </package>
+	
+</struts>

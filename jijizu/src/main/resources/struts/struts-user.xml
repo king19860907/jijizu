@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<!-- 不包含民命空间的url  -->
+	<package name="user" extends="strutsqs" namespace="/user">
+		<!-- 前往注册页面 -->
+		<action name="sign" class="com.jijizu.web.user.action.UserAction" method="sign">
+				<result name="success">/user/sign.jsp</result>
+		</action>
+		<!-- 获取用户弹层 -->
+		<action name="getUserCard" class="com.jijizu.web.user.action.UserAction" method="getUserCard">
+				<result name="success">/layer/user-card-layer.jsp</result>
+		</action>
+		<!-- 用户好友 -->
+		<action name="friends" class="com.jijizu.web.user.action.UserAction" method="friends">
+				<result name="success">/user/friends.jsp</result>
+		</action>
+		<!-- 用户信息 -->
+		<action name="info" class="com.jijizu.web.user.action.UserAction" method="info">
+				<result name="success">/user/info.jsp</result>
+		</action>
+		<!-- 用户单页 -->
+		<action name="view" class="com.jijizu.web.user.action.UserAction" method="view">
+				<result name="success">/user/user-status.jsp</result>
+		</action>
+		<!-- 基本信息 -->
+		<action name="base" class="com.jijizu.web.user.action.UserAction" method="base">
+				<result name="success">/user/set/base.jsp</result>
+		</action>
+		<!-- 修改头像 -->
+		<action name="photo" class="com.jijizu.web.user.action.UserAction" method="photo">
+				<result name="success">/user/set/photo.jsp</result>
+		</action>
+		<!-- 头像编辑 -->
+		<action name="photoCut" class="com.jijizu.web.user.action.UserAction" method="photoCut">
+				<result name="success">/user/set/photo-cut.jsp</result>
+		</action>
+		<!-- 保存头像 -->
+		<action name="updateHeadImage" class="com.jijizu.web.user.action.UserAction" method="updateHeadImage">
+				<result name="success" type="redirect">/home.jspa</result>
+				<result name="target" type="redirect">${target}</result>
+		</action>
+		<!-- 工作信息 -->
+		<action name="job" class="com.jijizu.web.user.action.UserAction" method="job">
+				<result name="success">/user/set/job.jsp</result>
+		</action>
+		<!-- 用户工作信息 -->
+		<action name="findUserJob" class="com.jijizu.web.user.action.UserAction" method="findUserJob">
+				<result name="success">/user/set/inc/job-inc.jsp</result>
+		</action>
+		<!-- 教育信息 -->
+		<action name="edu" class="com.jijizu.web.user.action.UserAction" method="edu">
+				<result name="success">/user/set/edu.jsp</result>
+		</action>
+		<!-- 查询学校信息 -->
+		<action name="findSchoolInfo" class="com.jijizu.web.user.action.UserAction" method="findSchoolInfo">
+				<result name="success">/user/set/inc/school-list-inc.jsp</result>
+		</action>
+		<!-- 查询用户学校信息 -->
+		<action name="findUserSchool" class="com.jijizu.web.user.action.UserAction" method="findUserSchool">
+				<result name="success">/user/set/inc/school-inc.jsp</result>
+		</action>
+		<!-- 孩子信息 -->
+		<action name="findChildInfo" class="com.jijizu.web.user.action.UserAction" method="findChildInfo">
+				<result name="success">/user/set/inc/child-inc.jsp</result>
+		</action>
+		<!-- 推荐用户 -->
+		<action name="recommendPerson" class="com.jijizu.web.user.action.UserAction" method="recommendPerson">
+				<result name="success">/user/inc/recommend-person-list-inc.jsp</result>
+		</action>
+		<!-- 推荐页面 -->
+		<action name="recommend" class="com.jijizu.web.user.action.UserAction" method="recommend">
+				<result name="success">/user/recommend.jsp</result>
+		</action>
+		<!--忘记密码 -->
+		<action name="forget" class="com.jijizu.web.user.action.UserAction" method="forget">
+				<result name="success">/user/forget-password.jsp</result>
+		</action>
+		<!-- 重置密码页面 -->
+		<action name="editPwd" class="com.jijizu.web.user.action.UserAction" method="editPwd">
+				<result name="success">/user/edit-password.jsp</result>
+		</action>
+		
+		<!-- ajax -->
+		<!-- 获取地区信息 -->
+		<action name="getAreaData" class="com.jijizu.web.user.action.UserActionAjax" method="getAreaData"/>
+   		<!-- 用户注册 -->
+   		<action name="userRegister" class="com.jijizu.web.user.action.UserActionAjax" method="userRegister"/>
+   		<!-- 验证用户名是否重复 -->
+   		<action name="checkLogName" class="com.jijizu.web.user.action.UserActionAjax" method="checkLogName"/>
+   		<!-- 验证昵称是否重复 -->
+   		<action name="checkNickName" class="com.jijizu.web.user.action.UserActionAjax" method="checkNickName"/>
+    	<!-- 用户登录 -->
+    	<action name="userLogin" class="com.jijizu.web.user.action.UserActionAjax" method="userLogin"/>
+    	<!-- 用户登出 -->
+    	<action name="logOut" class="com.jijizu.web.user.action.UserActionAjax" method="logOut"/>
+    	<!-- 添加工作信息 -->
+    	<action name="addUserJob" class="com.jijizu.web.user.action.UserActionAjax" method="addUserJob"/>
+    	<!-- 更新工作信息 -->
+    	<action name="updateUserJob" class="com.jijizu.web.user.action.UserActionAjax" method="updateUserJob"/>
+    	<!-- 删除工作信息验证 -->
+    	<action name="deleteUserJob" class="com.jijizu.web.user.action.UserActionAjax" method="deleteUserJob"/>
+    	<!-- 查询公司 -->
+    	<action name="findCompanyNames" class="com.jijizu.web.user.action.UserActionAjax" method="findCompanyNames"/>
+    	<!-- 添加用户学校信息 -->
+    	<action name="addUserSchool" class="com.jijizu.web.user.action.UserActionAjax" method="addUserSchool"/>
+    	<!-- 删除用户学校信息 -->
+    	<action name="deleteUserSchool" class="com.jijizu.web.user.action.UserActionAjax" method="deleteUserSchool"/>
+		<!-- 更新用户学校信息 -->
+    	<action name="updateUserSchool" class="com.jijizu.web.user.action.UserActionAjax" method="updateUserSchool"/>
+    	<!-- 获取学校名称 -->
+    	<action name="findSchoolNames" class="com.jijizu.web.user.action.UserActionAjax" method="findSchoolNames"/>
+    	<!-- 保存学校信息 -->
+    	<action name="saveSchoolInfo" class="com.jijizu.web.user.action.UserActionAjax" method="saveSchoolInfo"/>
+    	<!-- 更新用户信息 -->
+    	<action name="updateUserInfo" class="com.jijizu.web.user.action.UserActionAjax" method="updateUserInfo"/>
+    	<!-- 添加孩子信息 -->
+    	<action name="addChild" class="com.jijizu.web.user.action.UserActionAjax" method="addChild"/>
+    	<!-- 删除孩子信息 -->
+    	<action name="deleteChild" class="com.jijizu.web.user.action.UserActionAjax" method="deleteChild"/>
+		<!-- 更新孩子信息 -->
+    	<action name="updateChild" class="com.jijizu.web.user.action.UserActionAjax" method="updateChild"/>
+    	<!-- 查询生活小区民称 -->
+    	<action name="findLivingCommunityNames" class="com.jijizu.web.user.action.UserActionAjax" method="findLivingCommunityNames"/>
+    	<!-- 获取新消息提示 -->
+    	<action name="getNewMessage" class="com.jijizu.web.user.action.UserActionAjax" method="getNewMessage"/>
+    	<!-- 生成验证码 -->
+    	<action name="identifyingCode" class="com.jijizu.web.user.action.UserActionAjax" method="identifyingCode"/>
+    	<!-- 找回密码 -->
+    	<action name="findPwd" class="com.jijizu.web.user.action.UserActionAjax" method="findPwd"/>
+    	<!-- 重置密码 -->
+    	<action name="resetPwd" class="com.jijizu.web.user.action.UserActionAjax" method="resetPwd"/>
+    </package>
+	
+</struts>

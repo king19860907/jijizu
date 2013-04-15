@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<!-- 不包含民命空间的url  -->
+	<package name="group" extends="strutsqs" namespace="/group">
+		<!-- 集集组首页 -->
+		<action name="index" class="com.jijizu.web.group.action.GroupAction" method="index">
+				<result name="success">/group/group-index.jsp</result>
+		</action>
+		<!-- 我发起的集集组列表页 -->
+		<action name="myCreate" class="com.jijizu.web.group.action.GroupAction" method="myCreate">
+				<result name="success">/group/group-myCreate.jsp</result>
+		</action>
+		<!-- 我参加的集集组 -->
+		<action name="myEnter" class="com.jijizu.web.group.action.GroupAction" method="myEnter">
+				<result name="success">/group/group-enter.jsp</result>
+		</action>
+		<!-- 发起集集组 -->
+		<action name="create" class="com.jijizu.web.group.action.GroupAction" method="create">
+				<result name="success">/group/group-create.jsp</result>
+		</action>
+		<!-- 获取用户参加的集集组 -->
+		<action name="findUserGroup" class="com.jijizu.web.group.action.GroupAction" method="findUserGroup">
+				<result name="success">/status/inc/user-group-inc.jsp</result>
+		</action>
+		<!-- 集集组详情页 -->
+		<action name="view" class="com.jijizu.web.group.action.GroupAction" method="view">
+				<result name="success">/group/group-view.jsp</result>
+		</action>
+		<!-- 集集组参与者信息 -->
+		<action name="findGroupUsers" class="com.jijizu.web.group.action.GroupAction" method="findGroupUsers">
+				<result name="success">/group/inc/group-users-inc.jsp</result>
+		</action>
+		<!-- 集集组推荐 -->
+		<action name="findRecommendGroup" class="com.jijizu.web.group.action.GroupAction" method="findRecommendGroup">
+				<result name="success">/group/inc/group-recommend-inc.jsp</result>
+		</action>
+		<!-- 热门集集组 -->
+		<action name="findHotGroup" class="com.jijizu.web.group.action.GroupAction" method="findHotGrup">
+				<result name="success">/group/inc/group-hot-inc.jsp</result>
+		</action>
+		<!-- 管理成员 -->
+		<action name="manageUser" class="com.jijizu.web.group.action.GroupAction" method="manageUser">
+				<result name="success">/group/group-manage-user.jsp</result>
+		</action>
+		<!-- 修改集集组 -->
+		<action name="update" class="com.jijizu.web.group.action.GroupAction" method="update">
+				<result name="success">/group/group-update.jsp</result>
+		</action>
+		<!-- 获取用户相册 -->
+		<action name="getUserAlbum" class="com.jijizu.web.group.action.GroupAction" method="getUserAlbum">
+				<result name="success">/group/layer/choose-album-layer-inc.jsp</result>
+		</action>
+		<!-- 获取相册照片 -->
+		<action name="getPhoto" class="com.jijizu.web.group.action.GroupAction" method="getPhoto">
+				<result name="success">/group/layer/choose-photo-layer-inc.jsp</result>
+		</action>
+		<!-- 查看集集组照片 -->
+		<action name="photo" class="com.jijizu.web.group.action.GroupAction" method="photo">
+				<result name="success">/group/group-photo.jsp</result>
+		</action>
+		<!-- 集集组照片详细页 -->
+		<action name="photoDetail" class="com.jijizu.web.group.action.GroupAction" method="photoDetail">
+				<result name="success">/group/group-photo-detail.jsp</result>
+		</action>
+		
+		<!-- ajax -->
+		<!-- 发起集集组 -->
+		<action name="addGroup" class="com.jijizu.web.group.action.GroupActionAjax" method="addGroup"/>
+    	<!-- 加入集集组 -->
+    	<action name="enterGroup" class="com.jijizu.web.group.action.GroupActionAjax" method="enterGroup"/>
+    	<!-- 加入集集组等待列表 -->
+    	<action name="enterWaitList" class="com.jijizu.web.group.action.GroupActionAjax" method="enterWaitList"/>
+    	<!-- 取消参加集集组 -->
+    	<action name="cancelEnterGroup" class="com.jijizu.web.group.action.GroupActionAjax" method="cancelEnterGroup"/>
+   		<!-- 删除集集组 -->
+    	<action name="deleteGroup" class="com.jijizu.web.group.action.GroupActionAjax" method="deleteGroup"/>
+    	<!-- 集集组通过审核 -->
+    	<action name="passGroupUser" class="com.jijizu.web.group.action.GroupActionAjax" method="passGroupUser"/>
+    	<!-- 集集组用户拒绝审核 -->
+    	<action name="refuseGroupUser" class="com.jijizu.web.group.action.GroupActionAjax" method="refuseGroupUser"/>
+    	<!-- 更新集集组 -->
+    	<action name="updateGroup" class="com.jijizu.web.group.action.GroupActionAjax" method="updateGroup"/>
+    	<!-- 复制图片到集集组 -->
+    	<action name="copyPhotoToGroup" class="com.jijizu.web.group.action.GroupActionAjax" method="copyPhotoToGroup"/>
+    	<!-- 批量上传图片 -->
+    	<action name="uploadPhotoBatch" class="com.jijizu.web.group.action.GroupActionAjax" method="uploadPhotoBatch"/>
+    	<!-- 加入集集组验证 -->
+    	<action name="enterGroupCheck" class="com.jijizu.web.group.action.GroupActionAjax" method="enterGroupCheck"/>
+    </package>
+	
+</struts>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+           
+    <!-- 发私信验证 -->
+	<bean id="sendMailCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="userExistByNickNameCheck"/>
+				<ref bean="mailNotSendSelfCheck"/>
+				<ref bean="mailContentNotContansIllegalwordsCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 删除私信显示记录验证 -->
+	<bean id="deleteShowMailCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="mailShowExistCheck"/>
+				<ref bean="ownMailShowCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 删除私信显示记录验证 -->
+	<bean id="deleteDetailMailCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+				<ref bean="paramsNotNullCheck"/>
+				<ref bean="mailDetailExistCheck"/>
+				<ref bean="mailShowExistCheck"/>
+				<ref bean="ownMailShowCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 更新私信内容验证 -->
+	<bean id="updateMailContentCheckContext" class="com.jijizu.core.check.CheckContext">
+		<property name="checkList">
+			<list>
+				<ref bean="userLoginCheck"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="mailDAO" class="com.jijizu.core.mail.dao.impl.MailDAOImpl">
+		<property name="dataSource">
+            <ref bean="dataSourceJijizu" />
+        </property>
+        <property name="sqlMapClient">
+            <ref bean="sqlMapClientJijizu" />
+        </property>
+	</bean>
+	
+	<bean id="mailService" class="com.jijizu.core.mail.service.impl.MailServiceImpl">
+		<property name="mailDAO" ref="mailDAO"/>
+		<property name="userInfoDAO" ref="userInfoDAO"/>
+		<property name="messageService" ref="messageService"/>
+		<property name="emailService" ref="emailService"/>
+		<property name="mailEmailTemplate" ref="mailEmailTemplate"/>
+		<property name="sendMailCheckContext" ref="sendMailCheckContext"/>
+		<property name="deleteShowMailCheckContext" ref="deleteShowMailCheckContext"/>
+		<property name="deleteDetailMailCheckContext" ref="deleteDetailMailCheckContext"/>
+		<property name="updateMailContentCheckContext" ref="updateMailContentCheckContext"/>
+	</bean>
+	
+</beans>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<!-- 不包含民命空间的url  -->
+	<package name="search" extends="strutsqs" namespace="/search">
+		
+		<!-- 用户搜索 -->
+		<action name="user" class="com.jijizu.web.search.action.SearchAction" method="user">
+				<result name="success">/search/search-user.jsp</result>
+		</action>
+		
+    </package>
+	
+</struts>

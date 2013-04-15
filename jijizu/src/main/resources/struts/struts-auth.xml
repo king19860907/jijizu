@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<package name="auth" extends="strutsqs" namespace="/auth">
+		<!-- 认证首页 -->
+		<action name="index" class="com.jijizu.web.auth.action.AuthAction" method="index">
+				<result name="success">/auth/index.jsp</result>
+		</action>
+		<!-- 个人认证页 -->
+		<action name="authPersonal" class="com.jijizu.web.auth.action.AuthAction" method="authPersonal">
+				<result name="success">/auth/auth-personal.jsp</result>
+				<result name="no-head">/auth/auth-no-head.jsp</result>
+		</action>
+		<!-- 企业认证页 -->
+		<action name="authEnterprise" class="com.jijizu.web.auth.action.AuthAction" method="authEnterprise">
+				<result name="success">/auth/auth-enterprise.jsp</result>
+				<result name="no-head">/auth/auth-no-head.jsp</result>
+		</action>
+		
+		<!-- ajax -->
+		<!-- 个人认证申请 -->
+		<action name="addPersonalAuth" class="com.jijizu.web.auth.action.AuthActionAjax" method="addPersonalAuth"/>
+		<!-- 企业认证申请 -->
+		<action name="addEnterpriseAuth" class="com.jijizu.web.auth.action.AuthActionAjax" method="addEnterpriseAuth"/>
+    </package>
+	
+</struts>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 3.1//EN"
+        "urlrewrite3.1.dtd">	
+<urlrewrite>
+
+	<!-- 微博单页 -->
+	<rule>
+		<from>/status/([0-9]+)/?$</from> 
+		<to>/status-detail.jspa?statusId=$1</to> 
+	</rule>
+	
+	<!-- 用户好友 -->
+	<rule>
+    	<from>/u/([0-9]+)/friends/?$</from>
+    	<to>/user/friends.jspa?userId=$1</to>       	
+    </rule>
+    
+    <!-- 用户个人资料 -->
+	<rule>
+    	<from>/u/([0-9]+)/info/?$</from>
+    	<to>/user/info.jspa?userId=$1</to>       	
+    </rule>
+    
+    <!-- 用户单页 -->
+    <rule>
+    	<from>/u/([0-9]+)/?$</from>
+    	<to>/user/view.jspa?userId=$1</to>       	
+    </rule>
+    
+    <!-- 用户相册 -->
+    <rule>
+    	<from>/album/?$</from>
+    	<to>/album/album.jspa</to>       	
+    </rule>
+    
+    <!-- 认证首页 -->
+    <rule>
+    	<from>/auth/?$</from>
+    	<to>/auth/index.jspa</to>       	
+    </rule>
+    
+    <!-- 集集组首页 -->
+    <rule>
+    	<from>/group/?$</from>
+    	<to>/group/index.jspa</to>       	
+    </rule>
+    
+    <!-- 集集组首页 -->
+    <rule>
+    	<from>/group/([0-9]+)/?$</from>
+    	<to>/group/view.jspa?groupId=$1</to>       	
+    </rule>
+    
+    <!-- 好友管理 -->
+    <rule>
+    	<from>/friends/?$</from>
+    	<to>/friends/manage.jspa</to>       	
+    </rule>
+    
+    <!-- 小本本单页 -->
+    <rule>
+    	<from>/diary/([0-9]+)/?$</from>
+    	<to>/diary/view.jspa?diaryId=$1</to>       	
+    </rule>
+    
+    <!-- 小本本月份页面 -->
+    <rule>
+    	<from>/diary/?$</from>
+    	<to>/diary/month.jspa</to>       	
+    </rule>
+    <rule>
+    	<from>/diary/month/([0-9]+)/?$</from>
+    	<to>/diary/month.jspa?month=$1</to>       	
+    </rule>
+    
+    <!-- 小本本周页面 -->
+    <rule>
+    	<from>/diary/week/?$</from>
+    	<to>/diary/week.jspa</to>       	
+    </rule>
+    <rule>
+    	<from>/diary/week/([0-9]+)/?$</from>
+    	<to>/diary/week.jspa?week=$1</to>       	
+    </rule>
+    
+    <!-- 小本本日页面 -->
+    <rule>
+    	<from>/diary/day/?$</from>
+    	<to>/diary/day.jspa</to>       	
+    </rule>
+    <rule>
+    	<from>/diary/day/([0-9]+)/?$</from>
+    	<to>/diary/day.jspa?day=$1</to>       	
+    </rule>
+    
+    <!-- 用户单页 
+    <rule>
+    	<from>/u/([0-9]+).html</from>
+    	<to>/view.jspa?id=$1</to>       	
+    </rule>-->
+    
+    
+    <!-- 群组详情  无参数 
+	<rule>
+	<from>/groups/([0-9]+)/?$</from> 
+	<to>/groups/viewGroup.jspa?groupId=$1</to> 
+	</rule>-->
+	
+	<!-- 群组详情  有参数
+    <rule>
+	<from>/groups/([0-9]+)/\?([/?]*)$</from>
+	<to>/groups/viewGroup.jspa?groupId=$1&amp;$2</to>
+	</rule>  -->
+	
+    <!-- 群组首页 
+    <rule>
+    <from>/groups(/(\?[/?]*)?)?$</from> 
+	<to>/groups/group_explore.jspa$2</to> 
+	</rule>
+	<rule>
+    <from>/groups/explore(/(\?[/?]*)?)?$</from> 
+	<to>/groups/group_explore.jspa$2</to> 
+	</rule>-->
+	
+	  <!-- 红酒百科
+    <rule>
+    <from>/baike(/(\?[/?]*)?)?$</from> 
+	<to>/wine_baike.jspa$2</to> 
+	</rule> -->
+	  
+	
+	<!-- 群组话题 
+	<rule>
+	<from>/groups/topic-([0-9]+)$</from> 
+	<to>/groups/viewTopic.jspa?topicId=$1</to> 
+	</rule>
+	<rule>
+	<from>/groups/topic-([0-9]+)/$</from> 
+	<to>/groups/viewTopic.jspa?topicId=$1</to> 
+	</rule>  
+	<rule>
+	<from>/groups/topic-([0-9]+)/?page=([0-9]+)$</from> 
+	<to>/groups/viewTopic.jspa?topicId=$1&amp;page=$2</to> 
+	</rule>-->
+	
+	<!-- 删除话题 
+	<rule>
+		<from>/groups/topic-([0-9]+)/delete/?$</from> 
+		<to>/groups/deleteTopic.jspa?topicId=$1</to> 
+	</rule>-->
+	<!-- 置顶
+	<rule>
+		<from>/groups/topic-([0-9]+)/top$</from> 
+		<to>/groups/topicTop.jspa?topicId=$1</to> 
+	</rule> -->
+	<!-- 取消置顶 
+	<rule>
+		<from>/groups/topic-([0-9]+)/untop$</from> 
+		<to>/groups/topicUntop.jspa?topicId=$1</to> 
+	</rule>-->
+	<!-- 我的群组
+    <rule>
+    <from>/groups/mine(/(\?[/?]*)?)?$</from> 
+	<to>/groups/myGroups.jspa?$2</to> 
+	</rule> -->
+		
+	 <!-- 群组标签查看  无参数 
+	<rule>
+	<from>/groups/tag-([0-9]+)/?$</from> 
+	<to>/groups/group_explore.jspa?tagId=$1</to> 
+	</rule>-->
+	
+	<!-- 群组标签查看  有参数 
+    <rule>
+	<from>/groups/tag-([0-9]+)/\?([/?]*)$</from>
+	<to>/groups/group_explore.jspa?tagId=$1&amp;$2</to>
+	</rule> -->
+	
+	 <!-- 热门话题 
+    <rule>
+    <from>/topic(/(\?[/?]*)?)?$</from> 
+	<to>/microblog/topic.jspa$2</to> 
+	</rule>-->
+	
+	 <!-- 红酒百科 
+    <rule>
+    <from>/baike/(.*)/</from> 
+	<to>/microblog/search/blog.jspa?q=$1</to> 
+	</rule>-->
+	
+	<!-- 评酒吧
+	 <rule>
+    	<from>^/pingjiuba/((z|t|r|p\d).*)$</from>
+    	<to>/pingjiuba.jspa?fullUrl=/$1</to>       	
+    </rule>  
+    <rule>
+    	<from>^/pingjiuba$</from>
+    	<to>/pingjiuba.jspa?fullUrl=/</to>       	
+    </rule> 
+     <rule>
+    	<from>^/pingjiuba/$</from>
+    	<to>/pingjiuba.jspa?fullUrl=/</to>       	
+    </rule> -->
+	
+    <!--
+
+    INSTALLATION
+
+        in your web.xml add...
+
+        <filter>
+            <filter-name>UrlRewriteFilter</filter-name>
+            <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+            <init-param>
+                <param-name>logLevel</param-name>
+                <param-value>WARN</param-value>
+            </init-param>
+        </filter>
+        <filter-mapping>
+            <filter-name>UrlRewriteFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
+
+     EXAMPLES
+
+     Redirect one url
+        <rule>
+            <from>/some/old/page.html</from>
+            <to type="redirect">/very/new/page.html</to>
+        </rule>
+
+    Redirect a directory
+        <rule>
+            <from>/some/olddir/(.*)</from>
+            <to type="redirect">/very/newdir/$1</to>
+        </rule>
+
+    Clean a url
+        <rule>
+            <from>/products/([0-9]+)</from>
+            <to>/products/index.jsp?product_id=$1</to>
+        </rule>
+    eg, /products/1234 will be passed on to /products/index.jsp?product_id=1234 without the user noticing.
+
+    Browser detection
+        <rule>
+            <condition name="user-agent">Mozilla/[1-4]</condition>
+            <from>/some/page.html</from>
+            <to>/some/page-for-old-browsers.html</to>
+        </rule>
+    eg, will pass the request for /some/page.html on to /some/page-for-old-browsers.html only for older
+    browsers whose user agent srtings match Mozilla/1, Mozilla/2, Mozilla/3 or Mozilla/4.
+
+    Centralised browser detection
+        <rule>
+            <condition name="user-agent">Mozilla/[1-4]</condition>
+            <set type="request" name="browser">moz</set>
+        </rule>
+    eg, all requests will be checked against the condition and if matched
+    request.setAttribute("browser", "moz") will be called.
+
+    -->
+
+</urlrewrite>
+

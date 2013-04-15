@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	
+	<resultMap id="sysDataDic" class="com.jijizu.core.dto.SysDataDic">
+		<result column="dict_code" property="dictCode" />
+		<result column="name" property="name" />
+		<result column="parent_id" property="parentId" />
+		<result column="description" property="description" />
+		<result column="itemIndex" property="itemIndex" />
+		<result column="cancel_flag" property="cancelFlag" />
+	</resultMap>
+	
+	<!-- 根据父类型获取系统字典 -->
+	<select id="findSysDataDicByParentId" resultMap="sysDataDic" parameterClass="java.util.Map">
+		select * from j_sys_data_dic jsd where jsd.parent_id = #parentId# and jsd.cancel_flag = #cancelFlag# order by jsd.itemindex asc
+	</select>
+	
+	<!-- 查询出字典表中code和name的对应关系 -->
+	<select id="findDictCodeAndNameRelationship" resultClass="java.util.HashMap">
+		select jsd.dict_code,jsd.name from j_sys_data_dic jsd where jsd.cancel_flag = 0 
+	</select>
+	
+</sqlMap>

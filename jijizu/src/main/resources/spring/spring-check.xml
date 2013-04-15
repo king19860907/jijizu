@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	
+    <!-- 敏感词检查类 -->
+    <bean id="illegalWordsCheck" class="com.jijizu.core.check.dto.IllegalWordsCheck">
+    	<property name="illegalWordReplace" value="false"/>
+    	<property name="illegalWordReplaceWord" value="***"/>
+    </bean>
+    
+    
+    <!-- 参数不为空检查 -->
+    <bean id="paramsNotNullCheck" class="com.jijizu.core.check.service.impl.ParamsNotNullCheck">
+    	<property name="errorMsg" value="参数错误" />
+    </bean>
+    <!-- email合法性检查 -->
+    <bean id="emailCheck" class="com.jijizu.core.check.service.impl.user.EmailCheck">
+    	<property name="errorMsg" value="email格式不正确" />
+    </bean>
+    
+    <!-- 名字合法性检查 -->
+    <bean id="nameLegitimacyCheck" class="com.jijizu.core.check.service.impl.user.NameLegitimacyCheck">
+    	<property name="nameMinLength" value="2" />
+    	<property name="nameMaxLength" value="25" />
+    	<property name="errorMsg" value="姓名请以中英文开头，不得有特殊字符，且长度在2-25个字内！" />
+    	<property name="illegalWordsCheck" ref="illegalWordsCheck" />
+    </bean>
+    
+    <!-- 昵称合法性检查 -->
+    <bean id="nickNameLegitimacyCheck" class="com.jijizu.core.check.service.impl.user.NickNameLegitimacyCheck">
+    	<property name="nameMinLength" value="2" />
+    	<property name="nameMaxLength" value="25" />
+    	<property name="errorMsg" value="昵称请以中英文开头，不得有特殊字符，且长度在2-25个字内！" />
+    	<property name="illegalWordsCheck" ref="illegalWordsCheck" />
+    </bean>
+    
+    <!-- 姓名不为集集组官方名称检查 -->
+    <bean id="nameNotEqualOfficialNameCheck" class="com.jijizu.core.check.service.impl.user.NameNotEqualOfficialNameCheck">
+    	<property name="officalName" value="集集组" />
+    	<property name="errorMsg" value="姓名不能为集集组官方名称!" />
+    </bean>
+    
+    <!-- 昵称不重复检查 -->
+    <bean id="nickNameNotExistCheck" class="com.jijizu.core.check.service.impl.user.NickNameNotExistCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="该昵称已经存在！" />
+    </bean>
+    
+    <!-- 密码合法性检查 -->
+    <bean id="passwordLegitimacyCheck" class="com.jijizu.core.check.service.impl.user.PasswordLegitimacyCheck">
+    	<property name="passwordMinLength" value="6" />
+    	<property name="passwordMaxLength" value="16" />
+    	<property name="errorMsg" value="密码为6-16位字母或数字!" />
+    </bean>
+    
+    <!-- 登录名不存在检查 -->
+    <bean id="logNameNotExistCheck" class="com.jijizu.core.check.service.impl.user.LogNameNotExistCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="用户名已存在！" />
+    </bean>
+    
+    <!-- 登录名存在检查 -->
+    <bean id="logNameExistCheck" class="com.jijizu.core.check.service.impl.user.LogNameExistCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="用户不存在" />
+    </bean>
+    
+    <!-- 验证码检查 -->
+    <bean id="iCodeCheck" class="com.jijizu.core.check.service.impl.user.ICodeCheck">
+    	<property name="cacheService" ref="cacheService" />
+    	<property name="errorMsg" value="验证码错误或已经过期，请重新填写！" />
+    </bean>
+    
+    <!-- 找回密码未过期检查 -->
+    <bean id="findPwdUrlNotExpireCheck" class="com.jijizu.core.check.service.impl.user.FindPwdUrlNotExpireCheck">
+    	<property name="cacheService" ref="cacheService" />
+    	<property name="errorMsg" value="该找回密码链接已过期，请重新申请找回密码！" />
+    </bean>
+    
+    <!-- 登录名及密码正确检查 -->
+    <bean id="logNameAndPasswordCorrectCheck" class="com.jijizu.core.check.service.impl.user.LogNameAndPasswordCorrectCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="用户名或密码错误" />
+    </bean>
+    
+    <!-- 微博内容长度小于限定长度检查 -->
+    <bean id="statusContentLessThanLengthCheck" class="com.jijizu.core.check.service.impl.status.StatusContentLessThanLengthCheck">
+    	<property name="maxLength" value="280" />
+    	<property name="errorMsg" value="发布的内容大于140个字！" />
+    </bean>
+    
+    <!-- 用户最后发送的微博不重复检查 -->
+    <bean id="statusLastContentNotRepeatCheck" class="com.jijizu.core.check.service.impl.status.StatusLastContentNotRepeatCheck">
+    	<property name="errorMsg" value="不要太贪心哦，发一次就够啦！" />
+    </bean>
+    
+    <!-- 用户登录检查 -->
+    <bean id="userLoginCheck" class="com.jijizu.core.check.service.impl.user.UserLoginCheck">
+    	<property name="errorMsg" value="尚未登录！" />
+    </bean>
+    
+    <!-- 微博内容部只包括标点检查 -->
+    <bean id="statusContentNotOnlyContainsPunctuation" class="com.jijizu.core.check.service.impl.status.StatusContentNotOnlyContainsPunctuation">
+    	<property name="errorMsg" value="微博内容不能只包含标点符号！" />
+    </bean>
+    
+    <!--微博内容不只包含特殊符号检查 -->
+    <bean id="statusContentNotOnlyContainsSpecialChar" class="com.jijizu.core.check.service.impl.status.StatusContentNotOnlyContainsSpecialChar">
+    	<property name="errorMsg" value="微博内容不能只包含特殊符号！" />
+    </bean>
+    
+    <!-- 微博内容不包含敏感词检查 -->
+    <bean id="statusContentNotContansIllegalwordsCheck" class="com.jijizu.core.check.service.impl.status.StatusContentNotContansIllegalwordsCheck">
+    	<property name="errorMsg" value="微博内容不能包含敏感词！" />
+    	<property name="illegalWordsCheck" ref="illegalWordsCheck" />
+    </bean>
+    
+    <!-- 微博存在检查 -->
+    <bean id="statusExistCheck" class="com.jijizu.core.check.service.impl.status.StatusExistCheck">
+    	<property name="errorMsg" value="微博不存在！" />
+    	<property name="statusDAO" ref="statusDAO" />
+    </bean>
+    
+    <!-- 评论存在检查 -->
+    <bean id="commentExistCheck" class="com.jijizu.core.check.service.impl.status.CommentExistCheck">
+    	<property name="errorMsg" value="评论不存在！" />
+    	<property name="statusDAO" ref="statusDAO" />
+    </bean>
+    
+    <!-- 微薄是否属于某用户检查 -->
+    <bean id="statusBelongToUserCheck" class="com.jijizu.core.check.service.impl.status.StatusBelongToUserCheck">
+    	<property name="errorMsg" value="没有权限删除该微薄" />
+    	<property name="statusDAO" ref="statusDAO" />
+    </bean>
+    
+    <!-- 未关注自己检查 -->
+    <bean id="notFollowOwnCheck" class="com.jijizu.core.check.service.impl.follow.NotFollowOwnCheck">
+    	<property name="errorMsg" value="不能关注自己！" />
+    </bean>
+    
+    <!-- 未关注某人检查 -->
+    <bean id="notHasFollowCheck" class="com.jijizu.core.check.service.impl.follow.NotHasFollowCheck">
+    	<property name="errorMsg" value="已经发送过好友申请，请耐心等待对方通过！" />
+    	<property name="followDAO" ref="followDAO" />
+    </bean>
+    
+    <!-- 用户存在检查 -->
+    <bean id="userExistCheck" class="com.jijizu.core.check.service.impl.user.UserExistCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="该用户不存在" />
+    </bean>
+    
+     <!-- 能删除评论检查 -->
+    <bean id="commentCanDeleteCheck" class="com.jijizu.core.check.service.impl.status.CommentCanDeleteCheck">
+    	<property name="statusDAO" ref="statusDAO" />
+    	<property name="errorMsg" value="没有权限删除该评论" />
+    </bean>
+    
+    <!-- 不为给自己发送私信验证 -->
+    <bean id="mailNotSendSelfCheck" class="com.jijizu.core.check.service.impl.mail.MailNotSendSelfCheck">
+    	<property name="errorMsg" value="请不要给自己发送私信!" />
+    </bean>
+    
+    <!-- 私信内容不包含敏感词检查 -->
+    <bean id="mailContentNotContansIllegalwordsCheck" class="com.jijizu.core.check.service.impl.status.StatusContentNotContansIllegalwordsCheck">
+    	<property name="errorMsg" value="私信内容不能包含敏感词！" />
+    	<property name="illegalWordsCheck" ref="illegalWordsCheck" />
+    </bean>
+    
+    <!-- 用户存在检查(通过昵称) -->
+    <bean id="userExistByNickNameCheck" class="com.jijizu.core.check.service.impl.user.UserExistByNickNameCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="该用户不存在" />
+    </bean>
+    
+    <!-- 私信显示记录存在检查 -->
+    <bean id="mailShowExistCheck" class="com.jijizu.core.check.service.impl.mail.MailShowExistCheck">
+    	<property name="mailDAO" ref="mailDAO" />
+    	<property name="errorMsg" value="私信记录不存在" />
+    </bean>
+    
+    <!-- 为自己的私信显示记录检查 -->
+    <bean id="ownMailShowCheck" class="com.jijizu.core.check.service.impl.mail.OwnMailShowCheck">
+    	<property name="mailDAO" ref="mailDAO" />
+    	<property name="errorMsg" value="无权限删除该私信" />
+    </bean>
+    
+    <!-- 私信详细记录存在检查 -->
+    <bean id="mailDetailExistCheck" class="com.jijizu.core.check.service.impl.mail.MailDetailExistCheck">
+    	<property name="mailDAO" ref="mailDAO" />
+    	<property name="errorMsg" value="私信记录不存在" />
+    </bean>
+    
+    <!-- 孩子昵称不存在验证 -->
+    <bean id="childNickNameNotExistCheck" class="com.jijizu.core.check.service.impl.user.ChildNickNameNotExistCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="孩子昵称已存在" />
+    </bean>
+    
+    <!-- 生日不为空检查 -->
+    <bean id="birthdayNotNullCheck" class="com.jijizu.core.check.service.impl.user.BirthdayNotNullCheck">
+    	<property name="errorMsg" value="请选择生日" />
+    </bean>
+    
+    <!-- 现居地生活小区存在检查 -->
+    <bean id="livingCommunityExistCheck" class="com.jijizu.core.check.service.impl.user.LivingCommunityExistCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="现居地生活小区不存在！" />
+    </bean>
+    
+    <!-- 家乡生活小区存在检查 -->
+    <bean id="hometownLivingCommunityExistCheck" class="com.jijizu.core.check.service.impl.user.HometownLivingCommunityExistCheck">
+    	<property name="userInfoDAO" ref="userInfoDAO" />
+    	<property name="errorMsg" value="家乡生活小区不存在！" />
+    </bean>
+    
+    <!-- 开始时间在当前时间之后检查 -->
+    <bean id="groupStartDateAfterNowDateCheck" class="com.jijizu.core.check.service.impl.group.GroupStartDateAfterNowDateCheck">
+    	<property name="errorMsg" value="活动开始时间不能早于当前时间！" />
+    </bean>
+    
+    <!-- 开始时间在结束时间之前检查 -->
+    <bean id="groupStartDateBeforeEndDateCheck" class="com.jijizu.core.check.service.impl.group.GroupStartDateBeforeEndDateCheck">
+    	<property name="errorMsg" value="活动结束时间不能早于开始时间！" />
+    </bean>
+    
+    <!-- 报名截止时间早于活动开始时间检查 -->
+    <bean id="applyEndDateBeforeStartDatecCheck" class="com.jijizu.core.check.service.impl.group.ApplyEndDateBeforeStartDatecCheck">
+    	<property name="errorMsg" value="活动开始时间不能早于报名截止时间！" />
+    </bean>
+    
+    <!-- 报名截止时间晚于点钱时间检查 -->
+    <bean id="applyEndDateAfterNowDateCheck" class="com.jijizu.core.check.service.impl.group.ApplyEndDateAfterNowDateCheck">
+    	<property name="errorMsg" value="报名截止时间不能早于当前时间！" />
+    </bean>
+    
+    <!-- 人均费用合法性检查 -->
+    <bean id="groupCostLegitimacyCheck" class="com.jijizu.core.check.service.impl.group.GroupCostLegitimacyCheck">
+    	<property name="errorMsg" value="人均费用必须是金额格式，如：80或11.13" />
+    </bean>
+    
+     <!-- 集集组存在检查 -->
+    <bean id="groupExistCheck" class="com.jijizu.core.check.service.impl.group.GroupExistCheck">
+    	<property name="groupDAO" ref="groupDAO" />
+    	<property name="errorMsg" value="集集组不存在" />
+    </bean>
+    
+    <!-- 集集组存在检查 -->
+    <bean id="onlyFriendsCanEnterGroupCheck" class="com.jijizu.core.check.service.impl.group.OnlyFriendsCanEnterGroupCheck">
+    	<property name="groupDAO" ref="groupDAO" />
+    	<property name="errorMsg" value="该集集组只能是创建人的好友参加，请加创建人为好友后参加该集集组！" />
+    </bean>
+    
+    <!-- 集集组存在检查 -->
+    <bean id="groupApplyNumNotOverCheck" class="com.jijizu.core.check.service.impl.group.GroupApplyNumNotOverCheck">
+    	<property name="groupDAO" ref="groupDAO" />
+    	<property name="errorMsg" value="您报名的人数已超过该集集组的上限！" />
+    </bean>
+    
+     <!-- 手机号检查 -->
+    <bean id="mobileCheck" class="com.jijizu.core.check.service.impl.user.MobileCheck">
+    	<property name="errorMsg" value="手机号码填写错误" />
+    </bean>
+    
+    <!-- 个人认证不存在检查 -->
+    <bean id="persoanalAuthNotExistCheck" class="com.jijizu.core.check.service.impl.auth.PersoanalAuthNotExistCheck">
+    	<property name="authDAO" ref="authDAO" />
+    	<property name="errorMsg" value="您已经提交过申请，不能重复提交" />
+    </bean>
+    
+    <!-- 企业认证不存在检查 -->
+    <bean id="enterpriseAuthNotExistCheck" class="com.jijizu.core.check.service.impl.auth.EnterpriseAuthNotExistCheck">
+    	<property name="authDAO" ref="authDAO" />
+    	<property name="errorMsg" value="您已经提交过申请，不能重复提交" />
+    </bean>
+    
+    <!-- 用户未参加过集集组检查 -->
+    <bean id="groupUsersNotExistCheck" class="com.jijizu.core.check.service.impl.group.GroupUsersNotExistCheck">
+    	<property name="groupDAO" ref="groupDAO" />
+    	<property name="errorMsg" value="您已参加过该集集组，不能重复参加" />
+    </bean>
+    
+    <!-- 不为集集组创建者验证 -->
+    <bean id="notGroupCreatorCheck" class="com.jijizu.core.check.service.impl.group.NotGroupCreatorCheck">
+    	<property name="groupDAO" ref="groupDAO" />
+    	<property name="errorMsg" value="您为该集集组的创建人，无需参加该活动" />
+    </bean>
+    
+    <!-- 不为集集组创建者验证 -->
+    <bean id="groupNotBeginCheck" class="com.jijizu.core.check.service.impl.group.GroupNotBeginCheck">
+    	<property name="groupDAO" ref="groupDAO" />
+    	<property name="errorMsg" value="该活动报名已经结束，无法参加该活动" />
+    </bean>
+    
+    <!-- 集集组属于某个用户检查 -->
+    <bean id="groupBelongToUserCheck" class="com.jijizu.core.check.service.impl.group.GroupBelongToUserCheck">
+    	<property name="groupDAO" ref="groupDAO" />
+    	<property name="errorMsg" value="该集集组不是你创建的，无法删除" />
+    </bean>
+    
+    <!-- 参加人数合法性检查 -->
+    <bean id="groupApplyNumLegitimacyCheck" class="com.jijizu.core.check.service.impl.group.GroupApplyNumLegitimacyCheck">
+    	<property name="errorMsg" value="报名人数必须为正整数！" />
+    </bean>
+    
+    <!-- 相册存在检查 -->
+    <bean id="albumExistCheck" class="com.jijizu.core.check.service.impl.album.AlbumExistCheck">
+    	<property name="albumDAO" ref="albumDAO" />
+    	<property name="errorMsg" value="相册不存在" />
+    </bean>
+    
+    <!-- 相册属于用户检查 -->
+    <bean id="albumBelongToUserCheck" class="com.jijizu.core.check.service.impl.album.AlbumBelongToUserCheck">
+    	<property name="albumDAO" ref="albumDAO" />
+    	<property name="errorMsg" value="相册不属于你" />
+    </bean>
+    
+    <!-- 照片存在验证 -->
+    <bean id="photoExistCheck" class="com.jijizu.core.check.service.impl.album.PhotoExistCheck">
+    	<property name="albumDAO" ref="albumDAO" />
+    	<property name="errorMsg" value="照片不存在" />
+    </bean>
+    
+    <!-- 照片属于当前用户验证 -->
+    <bean id="photoBelongToUserCheck" class="com.jijizu.core.check.service.impl.album.PhotoBelongToUserCheck">
+    	<property name="albumDAO" ref="albumDAO" />
+    	<property name="errorMsg" value="照片不属于你" />
+    </bean>
+    
+    <!-- 小本本属于当前用户检查 -->
+    <bean id="diaryBelongToUserCheck" class="com.jijizu.core.check.service.impl.diary.DiaryBelongToUserCheck">
+    	<property name="diaryDAO" ref="diaryDAO" />
+    	<property name="errorMsg" value="该小本本不属于您的，故无法删除！" />
+    </bean>
+    
+    <!-- 小本本存在检查 -->
+    <bean id="diaryExistCheck" class="com.jijizu.core.check.service.impl.diary.DiaryExistCheck">
+    	<property name="diaryDAO" ref="diaryDAO" />
+    	<property name="errorMsg" value="该小本本不存在！" />
+    </bean>
+    
+</beans>

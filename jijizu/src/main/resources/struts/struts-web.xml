@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--指定struts2配置文件的DTD信息-->
+<!DOCTYPE struts PUBLIC 
+	"-//apache Software Foundation//DTD Struts Configuation 2.0//EN"
+	"struts-2.0.dtd">
+<!-- struts 是struts2配置文件的根元素-->
+<struts>
+
+	<!-- 不包含民命空间的url  -->
+	<package name="default" extends="strutsqs" namespace="/">
+		<!-- 首页 -->
+		<action name="index" class="com.jijizu.web.action.IndexAction" method="index">
+				<result name="success">/user/login_v2.jsp</result>
+				<result name="profile" type="redirect">/home.jspa</result>
+		</action>
+		<!-- 微博首页 -->
+		<action name="home" class="com.jijizu.web.status.action.StatusAction" method="home">
+				<result name="success">/status/home.jsp</result>
+		</action>
+		<!--  详细微博页 -->
+		<action name="status-detail" class="com.jijizu.web.status.action.StatusAction" method="statusDetail">
+				<result name="success">/status/status-detail.jsp</result>
+		</action>
+		<!--  收到的评论 -->
+		<action name="commentIn" class="com.jijizu.web.status.action.StatusAction" method="commentIn">
+				<result name="success">/status/comment-in.jsp</result>
+		</action>
+		<!-- 发出的评论 -->
+		<action name="commentOut" class="com.jijizu.web.status.action.StatusAction" method="commentOut">
+				<result name="success">/status/comment-out.jsp</result>
+		</action>
+		<!-- at我的微博 -->
+		<action name="atMeStatus" class="com.jijizu.web.status.action.StatusAction" method="atMeStatus">
+				<result name="success">/status/at-me-status.jsp</result>
+		</action>
+		<!-- at我的评论 -->
+		<action name="atMeComment" class="com.jijizu.web.status.action.StatusAction" method="atMeComment">
+				<result name="success">/status/at-me-comment.jsp</result>
+		</action>
+		<!-- 私信页面 -->
+		<action name="mail" class="com.jijizu.web.mail.action.MailAction" method="mail">
+				<result name="success">/mail/mail.jsp</result>
+		</action>
+		<!-- 通知页面 -->
+		<action name="notice" class="com.jijizu.web.notice.action.NoticeAction" method="notice">
+				<result name="success">/notice/notice-index.jsp</result>
+		</action>
+		
+    </package>
+	
+</struts>

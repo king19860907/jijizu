@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap >
+  
+  <resultMap id="noticeInfo" class="com.jijizu.core.notice.dto.NoticeInfo">
+		<result column="notice_id" property="noticeId" />
+		<result column="from_user_id" property="fromUserId" />
+		<result column="to_user_id" property="toUserId" />
+		<result column="content" property="content" />
+		<result column="create_date" property="createDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="read_flag" property="readFlag" />
+		<result column="from_user_name" property="fromUserName" />
+		<result column="from_user_head_img_url" property="fromUserHeadImgUrl" />
+		<result column="from_user_enterprise_flag" property="fromUserEnterpriseFlag" />
+		<result column="from_user_v_flag" property="fromUserVFlag" />
+  </resultMap>
+  
+  <!-- 保存系统通知 -->
+  <insert id="saveNotice" parameterClass="java.util.Map">
+  	<selectKey resultClass="Long" type="pre" keyProperty="noticeId">
+		SELECT seq_j_notice_info_id.nextval AS VALUE FROM DUAL
+	</selectKey>
+  	insert into j_notice_info jni
+	  (jni.notice_id,
+	   jni.from_user_id,
+	   jni.to_user_id,
+	   jni.content,
+	   jni.create_date,
+	   jni.cancel_flag,
+	   jni.read_flag)
+	values
+	  (#noticeId#, #fromUserId#, #toUserId#, #content#, sysdate, 0, 0)
+  </insert>
+  
+  <!-- 查询系统通知 -->
+  <sql id="findNoticePage_sql">
+  	 select jni.*,
+	       jui.name            as from_user_name,
+	       jui.head_img_url    as from_user_head_img_url,
+	       jui.v_flag          as from_user_v_flag,
+	       jui.enterprise_flag as from_user_enterprise_flag
+	  from j_notice_info jni, j_user_info jui
+	 where jni.to_user_id = #userId#
+	   and jni.cancel_flag = 0
+	   and jni.from_user_id = jui.user_id
+	 order by jni.create_date desc
+
+  </sql>
+   <select id="findNoticePage" parameterClass="java.util.Map" resultMap="noticeInfo">
+		<include refid="pageBegin" />		
+		<include refid="findNoticePage_sql" />	
+	 	<include refid="pageEnd" />	 	
+  </select>
+  <select id="findNoticePage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findNoticePage_sql" />
+		) A
+  </select>
+  
+  <!-- 删除系统通知 -->
+  <update id="deleteNotice" parameterClass="java.util.Map">
+  	update j_notice_info jni set jni.cancel_flag = 1 where jni.notice_id = #noticeId# and jni.to_user_id = #userId#
+  </update>
+  
+  <!-- 更新系统通知内容 -->
+  <update id="updateNoticeContent" parameterClass="java.util.Map">
+  	update j_notice_info jni set jni.content = #content# where jni.notice_id = #noticeId# and jni.to_user_id = #userId#
+  </update>
+  
+  <!-- 统计新私信数量 -->
+  <select id="countNewNoticeNumByUserId" parameterClass="java.util.Map" resultClass="java.lang.Long">
+  	select count(*) from j_notice_info jni where jni.to_user_id = #userId# and jni.cancel_flag = 0 and jni.read_flag = 0
+  </select>
+  
+  <!-- 根据用户更新通知为已读 -->
+  <update id="updateNoticeHasReadByUserId" parameterClass="java.util.Map">
+  	 update j_notice_info jni set jni.read_flag = 1 where jni.to_user_id = #userId#
+  </update>
+  
+</sqlMap>

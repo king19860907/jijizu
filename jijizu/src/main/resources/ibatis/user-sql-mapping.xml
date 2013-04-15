@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	
+	<resultMap id="userInfo" class="com.jijizu.core.user.dto.UserInfo">
+		<result column="user_id" property="userId" />
+		<result column="name" property="name" />
+		<result column="head_img_url" property="headImgUrl" />
+		<result column="gender" property="gender" />
+		<result column="log_name" property="logName" />
+		<result column="password" property="password" />
+		<result column="mobile" property="mobile" />
+		<result column="email" property="email" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="district" property="district" />
+		<result column="family_status" property="familyStatus" />
+		<result column="reg_date" property="regDate" />
+		<result column="update_date" property="updateDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="reg_source" property="regSource" />
+		<result column="reg_source_detail" property="regSourceDetail" />
+		<result column="status_num" property="statusNum" />
+		<result column="friend_num" property="friendNum" />
+		<result column="group_num" property="groupNum" />
+		<result column="nickname" property="nickName" />
+		<result column="user_desc" property="userDesc" />
+		<result column="new_mail_num" property="newMailNum" />
+		<result column="birthday" property="birthday" />
+		<result column="blood" property="blood" />
+		<result column="hometown_province" property="hometownProvince" />
+		<result column="hometown_city" property="hometownCity" />
+		<result column="hometown_district" property="hometownDistrict" />
+		<result column="living_community" property="livingCommunity" select="getLivingCommunityById"/>
+		<result column="hometown_living_community" property="hometownLivingCommunity" select="getLivingCommunityById"/>
+		<result column="status_permission" property="statusPermission" />
+		<result column="album_permission" property="albumPermission" />
+		<result column="enterprise_flag" property="enterpriseFlag" />
+		<result column="v_flag" property="vFlag" />
+		<result column="read_comment_time" property="readCommentTime" />
+		<result column="read_at_time" property="readAtTime" />
+	</resultMap>
+	
+	<!-- 根据用户ID获取用户信息 -->
+	<select id="getUserInfoById" parameterClass="java.lang.Long" resultMap="userInfo">
+		select * from j_user_info jsu where jsu.user_id = #userId# and rownum =1
+	</select>
+	
+	<!-- 根据用户登录名获取用户信息 -->
+	<select id="getUserInfoByLogName" parameterClass="java.lang.String" resultMap="userInfo">
+		select * from j_user_info jui where jui.log_name = #logName# and rownum = 1
+	</select>
+	
+	<!-- 根据用户名及密码获取用户信息 -->
+	<select id="getUserInfoByLogNameAndPassword" parameterClass="java.util.Map" resultMap="userInfo">
+		select * from j_user_info jui where jui.log_name = #logName# and jui.password = #password# and rownum = 1
+	</select>
+	
+	<!-- 保存用户 -->
+	<insert id="saveUser" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="id">
+			SELECT seq_j_user_info_id.NEXTVAL AS VALUE FROM DUAL
+		</selectKey>
+		insert into j_user_info jui
+		 (jui.user_id,
+          jui.name,
+          jui.gender,
+          jui.log_name,
+          jui.password,
+          jui.mobile,
+          jui.email,
+          jui.province,
+          jui.city,
+          jui.district,
+          jui.family_status,
+          jui.nickname)
+       values
+         (#id#,
+          #name#,
+          #gender#,
+          #logName#,
+          #password#,
+          #mobile#,
+          #email#,
+          #province#,
+          #city#,
+          #district#,
+          #familyStatus#,
+          #nickName#)
+	</insert>
+	
+	<!-- 更新用户信息 -->
+	<update id="updateUserInfo" parameterClass="java.util.Map">
+		update j_user_info jui
+	        set jui.name = #name#, jui.nickname = #nickName#,
+	        jui.gender = #gender#, jui.birthday = #birthday#,
+	        jui.province = #province#, jui.city = #city#,
+	        jui.district = #district#, jui.user_desc = #userDesc#,
+	        jui.blood = #blood#,jui.hometown_province = #hometownProvince#,
+	        jui.hometown_city=#hometownCity#,jui.hometown_district=#hometownDistrict#,
+	        jui.living_community = #livingCommunity#,jui.hometown_living_community = #hometownLivingCommunity#,
+	        jui.status_permission = #statusPermission#,jui.album_permission=#albumPermission#
+	        where jui.user_id = #userId#
+	</update>
+	
+	<sql id="findUserList_sql">
+		select * from (
+			select jsu.*,to_char(trunc(sysdate),'YYYY')-to_char(trunc(jsu.birthday),'YYYY') as age from j_user_info jsu
+		<isNotNull property="userSearch.companyId">
+			<isNotEmpty property="userSearch.companyId">
+				,j_user_job juj
+			</isNotEmpty>
+		</isNotNull>	
+		<isNotNull property="userSearch.companyName">
+			<isNotEmpty property="userSearch.companyName">
+				,j_user_job juj,j_company_info jci
+			</isNotEmpty>
+		</isNotNull>	
+		<isNotNull property="userSearch.schoolId">
+			<isNotEmpty property="userSearch.schoolId">
+				,j_user_school jus
+			</isNotEmpty>
+		</isNotNull>	
+		<isNotNull property="userSearch.schoolName">
+			<isNotEmpty property="userSearch.schoolName">
+				,j_user_school jus,j_school_info jsi
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="userSearch.childSchoolName">
+			<isNotEmpty property="userSearch.childSchoolName">
+				,j_child_info jci2,j_school_info jsi
+			</isNotEmpty>
+		</isNotNull>				
+			where jsu.user_id is not null
+		<isNotNull property="userSearch.companyId">
+			<isNotEmpty property="userSearch.companyId">
+				and juj.user_id = jsu.user_id
+				and juj.company_id = #userSearch.companyId#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="userSearch.companyName">
+			<isNotEmpty property="userSearch.companyName">
+				and juj.user_id = jsu.user_id
+				and juj.company_id = jci.company_id
+				and juj.cancel_flag = 0
+				and jci.company_name like '%'||#userSearch.companyName#||'%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="userSearch.schoolId">
+			<isNotEmpty property="userSearch.schoolId">
+				and jus.user_id = jsu.user_id
+				and jus.school_id = #userSearch.schoolId#
+			</isNotEmpty>
+		</isNotNull>	
+		<isNotNull property="userSearch.schoolName">
+			<isNotEmpty property="userSearch.schoolName">
+				and jus.user_id = jsu.user_id
+				and jus.school_id = jsi.school_id
+				and jsi.school_name like '%'||#userSearch.schoolName#||'%'
+			</isNotEmpty>
+		</isNotNull>	
+		<isNotNull property="userSearch.childSchoolName">
+			<isNotEmpty property="userSearch.childSchoolName">
+				and jci2.user_id = jsu.user_id
+				and jci2.school_id = jsi.school_id
+				and jci2.cancel_flag = 0
+				and jsi.school_name like '%'||#userSearch.childSchoolName#||'%'
+			</isNotEmpty>
+		</isNotNull>		
+		<isNotNull property="userSearch.name">
+			<isNotEmpty property="userSearch.name">
+				and jsu.name like '%'||#userSearch.name#||'%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="userSearch.nickName">
+			<isNotEmpty property="userSearch.nickName">
+				and jsu.nickname like '%'||#userSearch.nickName#||'%'
+			</isNotEmpty>
+		</isNotNull>	
+		<isNotNull property="userSearch.province">
+			<isNotEmpty property="userSearch.province">
+				and jsu.province = #userSearch.province#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="userSearch.city">
+			<isNotEmpty property="userSearch.city">
+				and jsu.city = #userSearch.city#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="userSearch.district">
+			<isNotEmpty property="userSearch.district">
+				and jsu.district = #userSearch.district#
+			</isNotEmpty>
+		</isNotNull>	
+		<isNotNull property="userSearch.gender">
+			<isNotEmpty property="userSearch.gender">
+				and jsu.gender = #userSearch.gender#
+			</isNotEmpty>
+		</isNotNull>		
+		) where user_id is not null
+		<isNotNull property="userSearch.maxAge">
+			<isNotEmpty property="userSearch.maxAge">
+				and age <![CDATA[ <= ]]> #userSearch.maxAge#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="userSearch.minAge">
+			<isNotEmpty property="userSearch.minAge">
+				and age <![CDATA[ >= ]]> #userSearch.minAge#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="userSearch.userId">
+			<isNotEmpty property="userSearch.userId">
+				and user_id <![CDATA[ <> ]]> #userSearch.userId#
+			</isNotEmpty>
+		</isNotNull>
+		order by reg_date desc
+	</sql>
+	<select id="findUserListPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findUserList_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+    <select id="findUserListPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findUserList_sql" />
+		) A
+	</select>
+	
+	<!-- 更新用户发送的微博数 -->
+	<update id="updateUserStatusNumByUserId" parameterClass="java.util.Map">
+		 UPDATE j_user_info SET STATUS_NUM=(SELECT COUNT(*) FROM j_status_info WHERE USER_ID=#userId# and cancel_flag = 0 and not_show_flag = 0) WHERE user_id=#userId#
+	</update>
+	
+	<!-- 更新用户集集组数 -->
+	<update id="updateUserGroupNumByUserId" parameterClass="java.util.Map">
+		update j_user_info jui set jui.group_num = (select count(*) from j_group_info jgi where jgi.user_id = #userId# and jgi.cancel_flag = 0) where jui.user_id=#userId#
+	</update>
+	
+	<!-- 更新用户的好友数量 -->
+	<update id="updateUserFriendNumByUserId" parameterClass="java.util.Map">
+		update j_user_info jui
+             set jui.friend_num = (select count(*)
+                                     from (select a.user_id, a.follow_user_id
+                                             from j_follow_info a,
+                                                  j_follow_info b
+                                            where a.user_id = #userId#
+                                              and a.user_id = b.follow_user_id
+                                              and a.follow_user_id = b.user_id
+                                            group by a.user_id,
+                                                     a.follow_user_id))
+           where jui.user_id = #userId#
+	</update>
+	
+	<!-- 根据名字获取用户 -->
+	<select id="getUserInfoByName" resultMap="userInfo" parameterClass="java.util.Map">
+		select * from j_user_info jui where jui.name = #name# and rownum = 1
+	</select>
+	
+	<!-- 获取at记录用户 -->
+	<select id="findUserInfoByAtRecord" parameterClass="java.util.Map" resultMap="userInfo">
+		 select jui.* from j_at_record jar,j_user_info jui where jar.at_user_id=jui.user_id and jar.ref_id = #refId# order by jar.at_record_id asc
+	</select>
+	
+	<!-- 根据昵称获取用户信息 -->
+	<select id="getUserInfoByNickName" parameterClass="java.util.Map" resultMap="userInfo">
+		select * from j_user_info jui where jui.nickname = #nickName# and rownum = 1
+	</select>
+	
+	<!-- 更新用户头像 -->
+	<update id="updateUserHeadImgUrl" parameterClass="java.util.Map">
+		 update j_user_info jui set jui.head_img_url = #headImgUrl# where jui.user_id = #userId#
+	</update>
+	
+	<!-- 保存公司信息 -->
+	<insert id="saveCompany" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="id">
+			SELECT seq_j_company_info_id.NEXTVAL AS VALUE FROM DUAL
+		</selectKey>
+		insert into j_company_info jci
+	     (jci.company_id,
+	      jci.company_name,
+	      jci.create_date,
+	      jci.cancel_flag)
+	   values
+	     (#id#, #companyName#, sysdate, 0)
+	</insert>
+	
+	<!-- 保存工作信息 -->
+	<insert id="saveUserJob" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="id">
+			SELECT seq_j_user_job_id.NEXTVAL AS VALUE FROM DUAL
+		</selectKey>
+		insert into j_user_job job
+	       (job.job_id,
+	        job.start_year,
+	        job.end_year,
+	        job.company_id,
+	        job.user_id,
+	        job.create_date,
+	        job.cancel_flag,
+	        job.department,
+	        job.province,
+	        job.city)
+	     values
+	       (#id#, #startYear#, #endYear#, #companyId#, #userId#,sysdate,0,#department#,#province#,#city#)
+	</insert>
+	
+	<resultMap id="companyInfo" class="com.jijizu.core.user.dto.CompanyInfo">
+		<result column="company_id" property="companyId" />
+		<result column="company_name" property="companyName" />
+		<result column="create_date" property="createDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+	</resultMap>
+	
+	<!-- 通过公司名获取公司信息 -->
+	<select id="getCompanyByName" parameterClass="java.util.Map" resultMap="companyInfo">
+		 select * from j_company_info jci where jci.company_name = #companyName# and rownum=1
+	</select>
+	
+	<resultMap id="userJob" class="com.jijizu.core.user.dto.UserJob">
+		<result column="job_id" property="jobId" />
+		<result column="start_year" property="startYear" />
+		<result column="end_year" property="endYear" />
+		<result column="company_id" property="companyId" />
+		<result column="company_name" property="companyName" />
+		<result column="user_id" property="userId" />
+		<result column="create_date" property="createDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="department" property="department" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+	</resultMap>
+	
+	<sql id="findUserJob_sql">
+		select juj.*, jci2.company_name
+         from j_user_job juj, j_company_info jci2
+        where juj.company_id = jci2.company_id and juj.user_Id = #userId# 
+        order by juj.end_year desc
+	</sql>
+	
+	<!-- 查询用户工作信息 -->
+	<select id="findUserJob" parameterClass="java.util.Map" resultMap="userJob">
+		select * from (<include refid="findUserJob_sql"/>) where rownum <![CDATA[ <= ]]> #rownum#
+	</select>
+	
+	<sql id="findUserByCompany_sql">
+		 select jui.*
+		   from j_user_job juj, j_user_info jui
+		  where juj.company_id = #companyId#
+		  and juj.user_id = jui.user_id
+		  and jui.user_id not in (select jfi.follow_user_id from j_follow_info jfi where jfi.user_id = #userId#)
+		    and jui.user_id <![CDATA[ <> ]]> #userId# order by jui.reg_date desc
+	</sql>
+	<!-- 根据公司名称查找用户 -->
+	<select id="findUserByCompany" parameterClass="java.util.Map" resultMap="userInfo">
+		select * from (<include refid="findUserByCompany_sql"/>) where rownum <![CDATA[ <= ]]> #rownum#
+	</select>
+	<!-- 根据公司名称查找用户（分页） -->
+	<select id="findUserByCompanyPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findUserByCompany_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+    <select id="findUserByCompanyPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findUserByCompany_sql" />
+		) A
+	</select>
+	
+	<!-- 删除用户工作信息 -->
+	<delete id="deleteUserJob" parameterClass="java.util.Map">
+		delete from j_user_job juj where juj.job_id = #jobId# and juj.user_id = #userId#
+	</delete>
+	
+	<!-- 通过名称查找公司信息 -->
+	<select id="findCompanyByName" parameterClass="java.util.Map" resultMap="companyInfo">
+		 select *
+           from j_company_info jci2
+          where jci2.company_name like '%'||#companyName#||'%' and jci2.cancel_flag = 0
+          and rownum <![CDATA[ <= ]]> #rownum#
+          order by jci2.create_date desc
+	</select>
+	
+	<!-- 更新用户工作信息 -->
+	<update id="updateUserJob" parameterClass="java.util.Map">
+		 update j_user_job juj
+             set juj.start_year = #startYear#,
+                 juj.end_year   = #endYear#,
+                 juj.department = #department#,
+                 juj.province   = #province#,
+                 juj.city       = #city#,
+                 juj.company_id = #companyId#
+           where juj.user_id = #userId#
+             and juj.job_id = #jobId#
+	</update>
+	
+	<!-- 保存用户学校信息 -->
+	<insert id="saveUserSchool" parameterClass="java.util.Map">
+		<selectKey resultClass="Long" type="pre" keyProperty="id">
+			SELECT seq_j_user_school_id.NEXTVAL AS VALUE FROM DUAL
+		</selectKey>
+		insert into j_user_school jus
+	      (jus.id,
+	       jus.school_id,
+	       jus.department,
+	       jus.type,
+	       jus.start_year,
+	       jus.user_id,
+	       jus.create_date) values
+	      (#id#,
+	       #schoolId#,
+	       #department#,
+	       #type#,
+	       #startYear#,
+	       #userId#,
+	       sysdate)
+	</insert>
+	
+	<resultMap id="schoolInfo" class="com.jijizu.core.user.dto.SchoolInfo">
+		<result column="school_id" property="schoolId" />
+		<result column="school_name" property="schoolName" />
+		<result column="type" property="type" />
+		<result column="area_level" property="areaLevel" />
+		<result column="area_name" property="areaName" />
+	</resultMap>
+	
+	<!-- 查询学校信息 -->
+	<select id="findSchoolInfo" parameterClass="java.util.Map" resultMap="schoolInfo">
+		select * from (select jsi.*,f_trans_pinyin_capital(substr(jsi.school_name,1,1)) as first_letter
+		  from j_school_info jsi)
+		 where school_id is not null
+		 <isNotNull property="areaName">
+		 	<isNotEmpty property="areaName">
+			  and area_name = #areaName#
+		 	</isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="schoolName">
+		 	<isNotEmpty property="schoolName">
+			   and school_name like '%'||#schoolName#||'%'
+		 	</isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="type">
+		 	<isNotEmpty property="type">
+			   and type = #type#
+		 	</isNotEmpty>
+		 </isNotNull>
+		  <isNotNull property="firstLetter">
+		 	<isNotEmpty property="firstLetter">
+			   and first_letter = #firstLetter#
+		 	</isNotEmpty>
+		 </isNotNull>
+	</select>
+	
+	<!-- 更具学校类型及名称获取学校信息 -->
+	<select id="getSchoolInfoBySchoolNameAndType" resultMap="schoolInfo" parameterClass="java.util.Map">
+    	select * from j_school_info jsi where jsi.school_name = #schoolName# and jsi.type = #type# and rownum = 1
+	</select>
+	
+	<resultMap id="userSchool" class="com.jijizu.core.user.dto.UserSchool">
+		<result column="id" property="id" />
+		<result column="school_id" property="schoolId" />
+		<result column="department" property="department" />
+		<result column="type" property="type" />
+		<result column="start_year" property="startYear" />
+		<result column="user_id" property="userId" />
+		<result column="create_date" property="createDate" />
+		<result column="school_name" property="schoolName" />
+	</resultMap>
+	
+	<sql id="findUserSchool_sql">
+		select jus.*,jsi.school_name
+		    from j_user_school jus, j_school_info jsi
+		   where jus.school_id = jsi.school_id
+		     and jus.user_id = #userId#
+		   order by jus.start_year desc
+	</sql>
+	
+	<!-- 查询用户学校信息 -->
+	<select id="findUserSchool" resultMap="userSchool" parameterClass="java.util.Map">
+		select * from (<include refid="findUserSchool_sql"/>) where rownum <![CDATA[ <= ]]> #rownum#
+	</select>
+	
+	<sql id="findUserBySchool_sql">
+		 select jui.*
+		   from j_user_school jus, j_user_info jui
+		  where jus.school_id = #schoolId#
+		  and jus.user_id = jui.user_id
+		  and jui.user_id not in (select jfi.follow_user_id from j_follow_info jfi where jfi.user_id = #userId#)
+		    and jus.user_id <![CDATA[ <> ]]> #userId# order by jui.reg_date desc
+	</sql>
+	
+	<!-- 根据学校查询用户 -->
+	<select id="findUserBySchool" parameterClass="java.util.Map" resultMap="userInfo">
+		select * from (<include refid="findUserBySchool_sql"/>) where rownum <![CDATA[ <= ]]> #rownum#
+	</select>
+	
+	<!-- 删除用户学校信息 -->
+	<delete id="deleteUserSchool" parameterClass="java.util.Map">
+		delete from j_user_school jus where jus.id = #id# and jus.user_id = #userId#
+	</delete>
+	
+	<!-- 更新用户学校信息 -->
+	<update id="updateUserSchool" parameterClass="java.util.Map">
+		update j_user_school jus
+	       set jus.school_id  = #schoolId#,
+	           jus.department = #department#,
+	           jus.type       = #type#,
+	           jus.start_year = #startYear#
+	     where jus.user_id = #userId#
+	       and jus.id = #userSchoolId#
+	</update>
+	
+	<!-- 保存学校信息 -->
+	<insert id="saveSchoolInfo" parameterClass="java.util.Map">
+  		<selectKey resultClass="Long" type="pre" keyProperty="schoolId">
+			SELECT seq_j_school_info_id.nextval AS VALUE FROM DUAL
+		</selectKey>
+  		 insert into j_school_info jsi
+		   (jsi.school_id,
+		    jsi.school_name,
+		    jsi.type,
+		    jsi.area_level,
+		    jsi.area_name)
+		 values
+		   (#schoolId#, #schoolName#, #type#, #areaLevel#, #areaName#)
+  	</insert>
+  	
+  	<!-- 保存孩子信息 -->
+  	<insert id="saveChildInfo" parameterClass="java.util.Map">
+  		<selectKey resultClass="Long" type="pre" keyProperty="childId">
+			SELECT seq_j_child_info_id.nextval AS VALUE FROM DUAL
+		</selectKey>
+  		insert into j_child_info jci3
+          (jci3.child_id,
+           jci3.name,
+           jci3.nick_name,
+           jci3.gender,
+           jci3.birthday,
+           jci3.school_id,
+           jci3.department,
+           jci3.create_date,
+           jci3.cancel_flag,
+           jci3.user_id)
+        values
+          (#childId#,
+           #name#,
+           #nickName#,
+           #gender#,
+           #birthday#,
+           #schoolId#,
+           #department#,
+           sysdate,
+           0,
+           #userId#)
+  	</insert>
+  	
+  	<resultMap id="childInfo" class="com.jijizu.core.user.dto.ChildInfo">
+		<result column="child_id" property="childId" />
+		<result column="name" property="name" />
+		<result column="nick_name" property="nickName" />
+		<result column="gender" property="gender" />
+		<result column="birthday" property="birthday" />
+		<result column="school_id" property="schoolId" />
+		<result column="department" property="department" />
+		<result column="create_date" property="createDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="user_id" property="userId" />
+		<result column="school_id" property="schoolInfo" select="getSchoolInfoById"/>
+	</resultMap>
+	
+	<select id="getSchoolInfoById" parameterClass="java.lang.Long" resultMap="schoolInfo">
+		select * from j_school_info jsi where jsi.school_id = #schoolId# and rownum = 1
+	</select>
+	
+	<!-- 根据昵称获取孩子信息 -->
+	<select id="getChildInfoByNickName" parameterClass="java.util.Map" resultMap="childInfo">
+		select * from j_child_info jci3 where jci3.nick_name = #nickName# and cancel_flag = 0 and rownum = 1
+	</select>
+	
+	<!-- 根据ID获取孩子信息 -->
+	<select id="getChildInfoById" parameterClass="java.util.Map" resultMap="childInfo">
+		select * from j_child_info jci3 where jci3.child_id = #childId# and cancel_flag = 0 and rownum = 1
+	</select>
+	
+	<!-- 根据用户查询孩子信息 -->
+	<select id="findChildInfoByUserId" parameterClass="java.util.Map" resultMap="childInfo">
+		select * from j_child_info jci3 where jci3.user_id = #userId# and jci3.cancel_flag = 0
+	</select>
+	
+	<!-- 删除孩子信息 -->
+	<update id="deleteChildInfo" parameterClass="java.util.Map">
+		update j_child_info jci3 set jci3.cancel_flag = 1 where jci3.child_id = #childId# and jci3.user_id = #userId#
+	</update>
+	
+	<!-- 更新孩子信息 -->
+	<update id="updateChildInfo" parameterClass="java.util.Map">
+		update j_child_info jci3
+              set jci3.name       = #name#,
+                  jci3.nick_name  = #nickName#,
+                  jci3.gender     = #gender#,
+                  jci3.birthday   = #birthday#,
+                  jci3.school_id  = #schoolId#,
+                  jci3.department = #department#
+            where jci3.user_id = #userId#
+              and jci3.child_id = #childId#
+	</update>
+	
+	<resultMap id="livingCommunity" class="com.jijizu.core.user.dto.LivingCommunity">
+		<result column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="area_name" property="areaName" />
+		<result column="area_level" property="areaLevel" />
+		<result column="create_date" property="createDate" />
+		<result column="cancel_flag" property="cancelFlag" />
+		<result column="area_name_father" property="areaNameFather" />
+	</resultMap>
+	
+	<!-- 查询生活小区 -->
+	<select id="findLivingCommunity" parameterClass="java.util.Map" resultMap="livingCommunity">
+		select * from j_living_community jlc where jlc.name like '%'||#name#||'%' 
+			<isNotNull property="areaNameFather">
+				<isNotEmpty property="areaNameFather">
+					and jlc.area_name_father like '%'||#areaNameFather#||'%' 
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotNull property="areaName">
+				<isNotEmpty property="areaName">
+					and jlc.area_name like '%'||#areaName#||'%' 
+				</isNotEmpty>
+			</isNotNull>
+			and jlc.cancel_flag = 0 and rownum <![CDATA[ <= ]]> #rownum#
+	</select>
+	
+	<!-- 通过ID获得生活小区 -->
+	<select id="getLivingCommunityById" parameterClass="java.lang.Long" resultMap="livingCommunity">
+		select * from j_living_community jlc where jlc.id = #id# and jlc.cancel_flag = 0 and rownum = 1
+	</select>
+	
+	<!-- 更新用户读取评论时间 -->
+	<update id="updateUserReadCommentTime" parameterClass="java.lang.Long">
+		update j_user_info jui set jui.read_comment_time = sysdate where jui.user_id = #userId#
+	</update>
+	
+	<!-- 更新用户读取at时间 -->
+	<update id="updateUserReadAtTime" parameterClass="java.lang.Long">
+		update j_user_info jui set jui.read_at_time = sysdate where jui.user_id = #userId#
+	</update>
+	
+	<resultMap id="recommendUser" class="com.jijizu.core.user.dto.RecommendUser">
+		<result column="user_id" property="userId" />
+		<result column="head_img_url" property="headImgUrl" />
+		<result column="name" property="name" />
+		<result column="recommend_type" property="recommendType" />
+		<result column="v_flag" property="vFlag" />
+		<result column="enterprise_flag" property="enterpriseFlag" />
+	</resultMap>
+	
+	<!-- 随机查询推荐用户 -->
+	<select id="findRecommendRandom" parameterClass="java.util.Map" resultMap="recommendUser">
+		select * from (
+			select jui.user_id,jui.head_img_url,jui.name,'' as recommend_type,jui.v_flag,jui.enterprise_flag
+             from j_user_info jui
+            where jui.user_id not in
+                  (select jfi.follow_user_id
+                     from j_follow_info jfi
+                    where jfi.user_id = #userId#)
+              and jui.user_id <![CDATA[ <> ]]>  #userId#
+              <isNotNull property="userIds">
+              	<isNotEmpty property="userIds">
+              		and jui.user_id not in
+	              <iterate property="userIds" open="(" close=")" conjunction=",">
+			  		 #userIds[]# 
+			  	  </iterate>
+              	</isNotEmpty>
+              </isNotNull>
+            order by dbms_random.random
+		) where rownum <![CDATA[ <= ]]>  #rownum#
+	</select>
+	
+	<!-- 随即查询中文用户名用户 -->
+	<select id="findRecommendRandomByGBKName" parameterClass="java.util.Map" resultMap="recommendUser">
+		select * from (
+			select jui.user_id,jui.head_img_url,jui.name,'' as recommend_type,jui.v_flag,jui.enterprise_flag
+             from j_user_info jui
+            where jui.user_id not in
+                  (select jfi.follow_user_id
+                     from j_follow_info jfi
+                    where jfi.user_id = #userId#)
+              and jui.user_id <![CDATA[ <> ]]>  #userId#
+              and jui.name <![CDATA[ <> ]]> CONVERT(jui.name, 'US7ASCII', 'ZHS16GBK')
+              <isNotNull property="userIds">
+              	<isNotEmpty property="userIds">
+              		and jui.user_id not in
+	              <iterate property="userIds" open="(" close=")" conjunction=",">
+			  		 #userIds[]# 
+			  	  </iterate>
+              	</isNotEmpty>
+              </isNotNull>
+            order by dbms_random.random
+		) where rownum <![CDATA[ <= ]]>  #rownum#
+	</select>
+	
+	<!-- 随机查询邻居推荐用户 -->
+	<select id="findNeighbourRecommendUser" parameterClass="java.util.Map" resultMap="recommendUser">
+		  select * from (
+		  	select jui.user_id,jui.head_img_url,jui.name,'RECOMMEND_TYPE_NEIGHBOR' as recommend_type,jui.v_flag,jui.enterprise_flag
+             from j_user_info jui
+            where jui.user_id not in
+                  (select jfi.follow_user_id
+                     from j_follow_info jfi
+                    where jfi.user_id = #userId#)
+              and jui.user_id <![CDATA[ <> ]]> #userId#
+              and jui.living_community = (select jui2.living_community from j_user_info jui2 where jui2.user_id = #userId#)
+            order by dbms_random.random
+		  ) where rownum <![CDATA[ <= ]]>  #rownum#
+	</select>
+	
+	<!-- 随机查询同校推荐用户 -->
+	<select id="findSchoolRecommendUser" parameterClass="java.util.Map" resultMap="recommendUser">
+		 select * from (
+		 	select jui.user_id,jui.head_img_url,jui.name,'RECOMMEND_TYPE_SAME_SCHOOL' as recommend_type,jui.v_flag,jui.enterprise_flag
+             from j_user_info jui
+            where jui.user_id not in
+                  (select jfi.follow_user_id
+                     from j_follow_info jfi
+                    where jfi.user_id = #userId#)
+              and jui.user_id <![CDATA[ <> ]]> #userId#
+               <isNotNull property="userIds">
+              	<isNotEmpty property="userIds">
+              		and jui.user_id not in
+	              <iterate property="userIds" open="(" close=")" conjunction=",">
+			  		 #userIds[]# 
+			  	  </iterate>
+              	</isNotEmpty>
+              </isNotNull>
+              and jui.user_id in (select jus2.user_id from j_user_school jus2 where jus2.school_id in (select jus.school_id from j_user_school jus where jus.user_id = #userId#))
+            order by dbms_random.random
+		 )where rownum <![CDATA[ <= ]]>  #rownum#
+	</select>
+	
+	<!-- 随机查询同事推荐用户 -->
+	<select id="findJobRecommendUser" parameterClass="java.util.Map" resultMap="recommendUser">
+		  select * from (
+		  	select jui.user_id,jui.head_img_url,jui.name,'RECOMMEND_TYPE_COLLEAGUE' as recommend_type,jui.v_flag,jui.enterprise_flag
+             from j_user_info jui
+            where jui.user_id not in
+                  (select jfi.follow_user_id
+                     from j_follow_info jfi
+                    where jfi.user_id = #userId#)
+              and jui.user_id <![CDATA[ <> ]]> #userId#
+              <isNotNull property="userIds">
+              	<isNotEmpty property="userIds">
+              		and jui.user_id not in
+	              <iterate property="userIds" open="(" close=")" conjunction=",">
+			  		 #userIds[]# 
+			  	  </iterate>
+              	</isNotEmpty>
+              </isNotNull>
+              and jui.user_id in (select juj2.user_id from j_user_job juj2 where juj2.company_id in (select juj.company_id from j_user_job juj where juj.user_id = #userId#))
+            order by dbms_random.random
+		  )where rownum <![CDATA[ <= ]]>  #rownum#
+	</select>
+	
+	<!-- 查找用户更具微博数排序 -->
+	<sql id="findUserOrderByStatusNum_sql">
+		select *
+                        from j_user_info jui
+                       where jui.cancel_flag = 0
+                         and jui.user_id <![CDATA[ <> ]]> #userId#
+                       order by jui.status_num desc
+	</sql>
+	<select id="findUserOrderByStatusNumPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findUserOrderByStatusNum_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+    <select id="findUserOrderByStatusNumPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findUserOrderByStatusNum_sql" />
+		) A
+	</select>
+	
+	<!-- 根据生活小区查询用户 -->
+	<sql id="findUserByLivingCommunityPage_sql">
+		  select *
+		    from j_user_info jui
+		   where (jui.living_community = #livingCommunityId#
+		      or jui.hometown_living_community = #livingCommunityId#)
+		      and jui.user_id <![CDATA[ <> ]]> #userId#
+		      and jui.district = #district#
+		      and jui.user_id not in (select jfi.follow_user_id from j_follow_info jfi where jfi.user_id = #userId#)
+		   order by jui.reg_date desc
+	</sql>
+	<select id="findUserByLivingCommunityPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findUserByLivingCommunityPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+    <select id="findUserByLivingCommunityPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findUserByLivingCommunityPage_sql" />
+		) A
+	</select>
+	
+	<!-- 根据学校查找用户(分页) -->
+	<select id="findUserBySchoolPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findUserBySchool_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+    <select id="findUserBySchoolPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findUserBySchool_sql" />
+		) A
+	</select>
+	
+	<!-- 根据孩子的学校查找用户 -->
+	<sql id="findUserByChildSchoolPage_sql">
+		  select distinct jui.*
+			  from j_user_info jui, j_child_info jci
+			 where jui.user_id = jci.user_id
+			   and jci.school_id = #schoolId#
+			   and jci.cancel_flag = 0
+			   and jui.user_id <![CDATA[ <> ]]> #userId#
+			   and jui.user_id not in (select jfi.follow_user_id
+			                             from j_follow_info jfi
+			                            where jfi.user_id = #userId#)
+			                            order by jui.reg_date desc
+	</sql>
+	<select id="findUserByChildSchoolPage" parameterClass="java.util.Map" resultMap="userInfo">
+		<include refid="pageBegin" />		
+		<include refid="findUserByChildSchoolPage_sql" />	
+	 	<include refid="pageEnd" />	 	
+	</select>
+    <select id="findUserByChildSchoolPage_cnt" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<include refid="pageCount" />	
+		FROM (	
+		<include refid="findUserByChildSchoolPage_sql" />
+		) A
+	</select>
+	
+	<!-- 更新密码 -->
+	<update id="updatePwd" parameterClass="java.util.Map">
+		update j_user_info jui set jui.password = #password# where jui.user_id = #userId# and jui.log_name = #logName#
+	</update>
+	
+</sqlMap>
